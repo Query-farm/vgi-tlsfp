@@ -15,5 +15,13 @@ select = ["ALL"]
 ignore = []
 fail_on = "info"
 
+[tool.vgi-lint-check.execution]
+# Run mode: every example is RUN (not just bound) against the attached worker.
+# All examples are self-contained — they decode an inline `from_hex(...)` sample
+# ClientHello — so they execute with no external files or extensions. (Only the
+# base JA4 TLS-client fingerprint is exercised; no JA4+ / JARM examples exist.)
+enabled = true
+mode = "run"
+
 [tool.vgi-lint-check.options]
 column_comment_min_ratio = 0.8
