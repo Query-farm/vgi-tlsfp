@@ -1,0 +1,28 @@
+[package]
+name = "tlsfp-worker"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "VGI worker computing TLS client/server fingerprints (JA3, JA3S, JA4 TLS-client) as SQL scalars over raw handshake bytes for DuckDB via Apache Arrow"
+
+[[bin]]
+name = "tlsfp-worker"
+path = "src/main.rs"
+
+[dependencies]
+vgi.workspace = true
+vgi-rpc.workspace = true
+arrow-array.workspace = true
+arrow-buffer.workspace = true
+arrow-schema.workspace = true
+tlsfp-core.workspace = true
+log = "0.4"
+env_logger = "0.11"
+
+[dev-dependencies]
+# Used only by the Arrow-boundary tests to independently re-derive a JA3 MD5 from
+# its pre-hash string.
+md-5 = "0.10"

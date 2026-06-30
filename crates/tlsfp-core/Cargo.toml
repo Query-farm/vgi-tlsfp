@@ -1,0 +1,23 @@
+[package]
+name = "tlsfp-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Pure-compute TLS ClientHello/ServerHello parser + JA3/JA3S/JA4(TLS-client) fingerprint builders (no Arrow/VGI deps, no JA4+ code)"
+
+[dependencies]
+# RustCrypto digests (MIT/Apache-2.0): MD5 for JA3/JA3S, SHA-256 for JA4. No
+# copyleft, no patent exposure — keeps the licensing story clean.
+md-5 = "0.10"
+sha2 = "0.10"
+
+[dev-dependencies]
+proptest = "1"
+
+[lints.rust]
+# The parser walks untrusted, attacker-controlled handshake bytes; forbidding
+# `unsafe` guarantees the fuzz/proptest surface can only ever return Err/None,
+# never UB.
+unsafe_code = "forbid"

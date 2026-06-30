@@ -1,0 +1,228 @@
+//! The `tlsfp` VGI worker.
+//!
+//! A standalone binary DuckDB launches and talks to over Apache Arrow IPC
+//! (`ATTACH 'tlsfp' (TYPE vgi, LOCATION '…')`). It computes **TLS client/server
+//! fingerprints — JA3, JA3S, and the base JA4 (TLS-client)** — as pure SQL
+//! scalars over raw `ClientHello`/`ServerHello` bytes (or already-extracted
+//! fields), under the catalog `tlsfp`, schema `main`:
+//!
+//! ```sql
+//! INSTALL vgi FROM community; LOAD vgi;
+//! ATTACH 'tlsfp' (TYPE vgi, LOCATION './target/release/tlsfp-worker');
+//! SET search_path = 'tlsfp.main';
+//!
+//! -- cluster suspect infrastructure by client fingerprint
+//! SELECT ja3(client_hello) AS ja3, ja4(client_hello) AS ja4, count(*) n
+//! FROM captured_handshakes GROUP BY 1,2 ORDER BY n DESC;
+//!
+//! -- compute from already-parsed fields (no raw bytes needed)
+//! SELECT ja3_from_parts(771, ciphers, extensions, curves, point_formats) FROM zeek_ssl;
+//! ```
+//!
+//! All fingerprint math lives in the pure, fuzzable `tlsfp-core` crate, which is
+//! kept physically free of any JA4+ / JARM code (see the hard-stop in
+//! `tlsfp-core`'s `lib.rs`); the `scalar/` modules are thin Arrow adapters.
+
+mod arrow_io;
+#[cfg(test)]
+mod fixtures;
+mod meta;
+mod scalar;
+
+use vgi::catalog::CatSchema;
+use vgi::catalog::CatalogModel;
+use vgi::Worker;
+
+/// Worker version string, surfaced by `tlsfp_version()`.
+pub fn version() -> &'static str {
+    env!("CARGO_PKG_VERSION")
+}
+
+/// Catalog + schema metadata (description, provenance, discovery tags) surfaced
+/// to DuckDB and the `vgi-lint` metadata-quality linter.
+fn catalog_metadata(name: &str) -> CatalogModel {
+    CatalogModel {
+        name: name.to_string(),
+        comment: Some(
+            "TLS client/server fingerprinting (JA3, JA3S, JA4 TLS-client) as pure SQL scalars \
+             over raw handshake bytes."
+                .to_string(),
+        ),
+        tags: vec![
+            (
+                "vgi.title".to_string(),
+                "TLS Fingerprinting (JA3 / JA3S / JA4)".to_string(),
+            ),
+            (
+                "vgi.keywords".to_string(),
+                crate::meta::keywords_json(
+                    "tls, fingerprint, ja3, ja3s, ja4, clienthello, serverhello, threat hunting, \
+                     network security, c2, malware, bot detection, soc, dfir, clustering",
+                ),
+            ),
+            (
+                "vgi.doc_llm".to_string(),
+                "Compute TLS fingerprints — JA3 and JA3S (Salesforce) and the base JA4 TLS-client \
+                 (FoxIO) — directly in SQL from raw ClientHello/ServerHello bytes or already-\
+                 extracted fields. Use it to cluster suspicious client/server infrastructure by \
+                 fingerprint and JOIN those hashes to certificate and flow data for threat \
+                 hunting. Only the patent-free fingerprints are provided (no JA4+ suite, no JARM)."
+                    .to_string(),
+            ),
+            (
+                "vgi.doc_md".to_string(),
+                "# tlsfp — TLS Client/Server Fingerprinting in SQL\n\n\
+                 **Compute JA3, JA3S, and the base JA4 (TLS-client) fingerprints directly in \
+                 DuckDB SQL** from raw `ClientHello`/`ServerHello` bytes — or from fields you \
+                 already extracted with Zeek/pcap tooling. Apply a fingerprint to a column of \
+                 captured handshakes and `GROUP BY` it to surface a C2 or bot family, then JOIN \
+                 the resulting VARCHAR hashes to certificate (`vgi-x509`) and flow (`vgi-netflow`) \
+                 data to pivot from a fingerprint to the certs and flows behind it.\n\n\
+                 Every function is pure, deterministic compute — no network, no state. Each \
+                 fingerprint offers two input modes: pass the **raw handshake record** (the worker \
+                 parses it) or the **component fields**. Malformed or truncated bytes return \
+                 `NULL` per row rather than failing the query, and an `is_tls_handshake(bytes)` \
+                 guard scalar lets you filter first. The `*_string`/`*_raw` companions expose the \
+                 pre-hash JA3 string and the un-hashed JA4_r form for audit and custom re-hashing, \
+                 and `parse_client_hello` decodes the handshake into a struct of its fields.\n\n\
+                 **Licensing:** only the patent-free fingerprints are implemented — JA3/JA3S \
+                 (BSD-3) and base JA4 TLS-client (BSD-3, patent-disclaimed). The JA4+ suite \
+                 (JA4S/JA4H/JA4L/JA4X/JA4SSH, FoxIO License 1.1, patent-pending) and JARM are \
+                 intentionally NOT implemented. The `tlsfp` worker is part of the \
+                 [Query.Farm](https://query.farm) VGI ecosystem of DuckDB workers — see the \
+                 [source repository](https://github.com/Query-farm/vgi-tlsfp)."
+                    .to_string(),
+            ),
+            (
+                "vgi.agent_test_tasks".to_string(),
+                crate::meta::agent_test_tasks_json(&[
+                    (
+                        "cluster_by_ja4",
+                        "I have a table captured_handshakes(client_hello BLOB). Cluster the \
+                         captured client handshakes by their JA4 fingerprint and show the most \
+                         common ones first. Return columns ja4 and n (the count).",
+                        "SELECT tlsfp.main.ja4(client_hello) AS ja4, count(*) AS n FROM \
+                         captured_handshakes GROUP BY 1 ORDER BY n DESC",
+                    ),
+                    (
+                        "ja3_from_fields",
+                        "My zeek_ssl table already has the parsed fields version (INT), ciphers, \
+                         extensions, curves and point_formats (INT[] each). Compute the JA3 \
+                         fingerprint for each row as a column named ja3.",
+                        "SELECT tlsfp.main.ja3_from_parts(version, ciphers, extensions, curves, \
+                         point_formats) AS ja3 FROM zeek_ssl",
+                    ),
+                    (
+                        "guard_then_fingerprint",
+                        "From captured_handshakes(client_hello BLOB), compute the JA3 fingerprint \
+                         only for rows whose bytes actually look like a TLS handshake; skip the \
+                         rest. Return a single column named ja3.",
+                        "SELECT tlsfp.main.ja3(client_hello) AS ja3 FROM captured_handshakes WHERE \
+                         tlsfp.main.is_tls_handshake(client_hello)",
+                    ),
+                    (
+                        "worker_version",
+                        "What version of the tlsfp worker is currently running? Return a single \
+                         row with one column named version.",
+                        "SELECT tlsfp.main.tlsfp_version() AS version",
+                    ),
+                ]),
+            ),
+            ("vgi.author".to_string(), "Query.Farm".to_string()),
+            (
+                "vgi.copyright".to_string(),
+                "Copyright 2026 Query Farm LLC - https://query.farm".to_string(),
+            ),
+            ("vgi.license".to_string(), "MIT".to_string()),
+            (
+                "vgi.support_contact".to_string(),
+                "https://github.com/Query-farm/vgi-tlsfp/issues".to_string(),
+            ),
+            (
+                "vgi.support_policy_url".to_string(),
+                "https://github.com/Query-farm/vgi-tlsfp/blob/main/README.md".to_string(),
+            ),
+        ],
+        source_url: Some("https://github.com/Query-farm/vgi-tlsfp".to_string()),
+        schemas: vec![CatSchema {
+            name: "main".to_string(),
+            comment: Some(
+                "TLS fingerprint functions: ja3/ja3s/ja4 and their string/raw/from-parts \
+                 companions, parse_client_hello, and the is_tls_handshake guard."
+                    .to_string(),
+            ),
+            tags: vec![
+                (
+                    "vgi.title".to_string(),
+                    "TLS Fingerprinting — main".to_string(),
+                ),
+                (
+                    "vgi.keywords".to_string(),
+                    crate::meta::keywords_json(
+                        "tls, ja3, ja3s, ja4, fingerprint, clienthello, serverhello, \
+                         parse_client_hello, is_tls_handshake, threat hunting",
+                    ),
+                ),
+                ("domain".to_string(), "network-security".to_string()),
+                ("category".to_string(), "fingerprinting".to_string()),
+                ("topic".to_string(), "tls-fingerprinting".to_string()),
+                (
+                    "vgi.doc_llm".to_string(),
+                    "TLS fingerprint functions: ja3/ja3_string/ja3_from_parts, \
+                     ja3s/ja3s_from_parts, ja4/ja4_raw/ja4_from_parts, parse_client_hello, and \
+                     the is_tls_handshake guard. Compute JA3/JA3S/JA4 over raw handshake bytes or \
+                     extracted fields to cluster TLS infrastructure."
+                        .to_string(),
+                ),
+                (
+                    "vgi.doc_md".to_string(),
+                    "The single schema for the `tlsfp` worker. It holds the JA3, JA3S, and base \
+                     JA4 (TLS-client) fingerprint functions — each with a bytes mode and a \
+                     `*_from_parts` mode — plus the `ja3_string`/`ja4_raw` pre-hash companions, \
+                     the `parse_client_hello` decoder, the `is_tls_handshake` guard, and \
+                     `tlsfp_version`."
+                        .to_string(),
+                ),
+                (
+                    "vgi.example_queries".to_string(),
+                    "SELECT tlsfp.main.ja3(client_hello) AS ja3, tlsfp.main.ja4(client_hello) AS \
+                     ja4, count(*) n FROM captured_handshakes GROUP BY 1,2 ORDER BY n DESC;\n\
+                     SELECT tlsfp.main.ja3s(server_hello) FROM captured_handshakes;\n\
+                     SELECT tlsfp.main.ja3_from_parts(771, ciphers, extensions, curves, \
+                     point_formats) FROM zeek_ssl;\n\
+                     SELECT tlsfp.main.parse_client_hello(client_hello).* FROM \
+                     captured_handshakes;\n\
+                     SELECT tlsfp.main.ja4(client_hello) FROM captured_handshakes WHERE \
+                     tlsfp.main.is_tls_handshake(client_hello);"
+                        .to_string(),
+                ),
+            ],
+            views: Vec::new(),
+            macros: Vec::new(),
+            // Scalars only (per spec): the fingerprints are deterministic compute,
+            // so the worker registers no table functions.
+            tables: Vec::new(),
+        }],
+        ..Default::default()
+    }
+}
+
+fn main() {
+    // Logs MUST go to stderr — stdout is the Arrow-IPC channel.
+    let _ = env_logger::Builder::from_env(env_logger::Env::default().filter_or("VGI_LOG", "info"))
+        .format_timestamp_millis()
+        .try_init();
+
+    // The catalog name DuckDB sees in `ATTACH 'tlsfp' (TYPE vgi, …)`. Default to
+    // `tlsfp`, but honor an override so a test harness can rename it.
+    if std::env::var_os("VGI_WORKER_CATALOG_NAME").is_none() {
+        std::env::set_var("VGI_WORKER_CATALOG_NAME", "tlsfp");
+    }
+    let catalog_name =
+        std::env::var("VGI_WORKER_CATALOG_NAME").unwrap_or_else(|_| "tlsfp".to_string());
+
+    let mut worker = Worker::new();
+    scalar::register(&mut worker);
+    worker.set_catalog(catalog_metadata(&catalog_name));
+    worker.run();
+}
