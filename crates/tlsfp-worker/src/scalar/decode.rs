@@ -69,6 +69,7 @@ impl ScalarFunction for ParseClientHello {
                  alpn), e.g. `parse_client_hello(client_hello).*`.",
                 "parse, decode, clienthello, tls, sni, ciphers, extensions, curves, alpn, \
                  struct, inspect handshake",
+                "Parsing & guards",
             ),
             ..Default::default()
         }

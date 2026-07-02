@@ -49,6 +49,7 @@ impl ScalarFunction for IsTlsHandshake {
                  `WHERE is_tls_handshake(pkt)`.",
                 "tls, handshake, clienthello, serverhello, guard, validate, is tls, filter, \
                  detect tls",
+                "Parsing & guards",
             ),
             ..Default::default()
         }

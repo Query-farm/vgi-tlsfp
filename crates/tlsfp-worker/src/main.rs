@@ -38,6 +38,76 @@ pub fn version() -> &'static str {
     env!("CARGO_PKG_VERSION")
 }
 
+/// The fixed analyst-task suite (`vgi.agent_test_tasks`) that `vgi-lint simulate`
+/// grades. Every task is **self-contained and deterministic**: because the worker
+/// exposes only pure scalars (no tables), each prompt supplies its input inline —
+/// a hex `ClientHello`/`ServerHello` the analyst decodes with `from_hex(...)`, or
+/// explicit list/scalar literals — so both the analyst's answer and the canonical
+/// `reference_sql` run against the attached worker and compare exactly.
+fn agent_test_tasks_value() -> String {
+    use crate::meta::AgentTask;
+    use crate::meta::SAMPLE_CLIENT_HELLO_HEX as CH;
+    use crate::meta::SAMPLE_SERVER_HELLO_HEX as SH;
+    crate::meta::agent_test_tasks_json(&[
+        AgentTask {
+            name: "ja4_of_clienthello",
+            prompt: &format!(
+                "I captured one TLS ClientHello; its raw bytes in hex are '{CH}'. Compute its \
+                 base JA4 (TLS-client) fingerprint. Return one row with a single column named \
+                 ja4."
+            ),
+            reference_sql: &format!("SELECT tlsfp.main.ja4(from_hex('{CH}')) AS ja4"),
+            unordered: false,
+            ignore_column_names: true,
+        },
+        AgentTask {
+            name: "ja3_from_extracted_fields",
+            prompt: "A Zeek ssl.log row already exposes these parsed ClientHello fields: legacy \
+                     version 771, offered cipher suites [4865,4866,4867,49195,49199], extensions \
+                     [0,11,10,13], elliptic curves [29,23,24], and EC point formats [0]. Compute \
+                     the JA3 fingerprint from those fields (no raw bytes). Return one row with a \
+                     single column named ja3.",
+            reference_sql: "SELECT tlsfp.main.ja3_from_parts(771, [4865,4866,4867,49195,49199], \
+                            [0,11,10,13], [29,23,24], [0]) AS ja3",
+            unordered: false,
+            ignore_column_names: true,
+        },
+        AgentTask {
+            name: "guard_then_ja3",
+            prompt: &format!(
+                "I have one captured record whose raw bytes in hex are '{CH}'. First confirm the \
+                 bytes really are a TLS handshake, and also compute their JA3 fingerprint. Return \
+                 one row with exactly two columns, in this order: is_handshake (the boolean guard \
+                 result) then ja3 (the fingerprint)."
+            ),
+            reference_sql: &format!(
+                "SELECT tlsfp.main.is_tls_handshake(from_hex('{CH}')) AS is_handshake, \
+                 tlsfp.main.ja3(from_hex('{CH}')) AS ja3"
+            ),
+            unordered: false,
+            ignore_column_names: true,
+        },
+        AgentTask {
+            name: "ja3s_of_serverhello",
+            prompt: &format!(
+                "I captured one TLS ServerHello; its raw bytes in hex are '{SH}'. Compute its \
+                 JA3S (server) fingerprint. Return one row with a single column named ja3s."
+            ),
+            reference_sql: &format!("SELECT tlsfp.main.ja3s(from_hex('{SH}')) AS ja3s"),
+            unordered: false,
+            ignore_column_names: true,
+        },
+        AgentTask {
+            name: "worker_version",
+            prompt: "What version of the tlsfp worker is currently running? Return a single row \
+                     with one column named version.",
+            reference_sql: "SELECT tlsfp.main.tlsfp_version() AS version",
+            unordered: false,
+            ignore_column_names: true,
+        },
+    ])
+}
+
 /// Catalog + schema metadata (description, provenance, discovery tags) surfaced
 /// to DuckDB and the `vgi-lint` metadata-quality linter.
 fn catalog_metadata(name: &str) -> CatalogModel {
@@ -93,41 +163,7 @@ fn catalog_metadata(name: &str) -> CatalogModel {
                  [source repository](https://github.com/Query-farm/vgi-tlsfp)."
                     .to_string(),
             ),
-            (
-                "vgi.agent_test_tasks".to_string(),
-                crate::meta::agent_test_tasks_json(&[
-                    (
-                        "cluster_by_ja4",
-                        "I have a table captured_handshakes(client_hello BLOB). Cluster the \
-                         captured client handshakes by their JA4 fingerprint and show the most \
-                         common ones first. Return columns ja4 and n (the count).",
-                        "SELECT tlsfp.main.ja4(client_hello) AS ja4, count(*) AS n FROM \
-                         captured_handshakes GROUP BY 1 ORDER BY n DESC",
-                    ),
-                    (
-                        "ja3_from_fields",
-                        "My zeek_ssl table already has the parsed fields version (INT), ciphers, \
-                         extensions, curves and point_formats (INT[] each). Compute the JA3 \
-                         fingerprint for each row as a column named ja3.",
-                        "SELECT tlsfp.main.ja3_from_parts(version, ciphers, extensions, curves, \
-                         point_formats) AS ja3 FROM zeek_ssl",
-                    ),
-                    (
-                        "guard_then_fingerprint",
-                        "From captured_handshakes(client_hello BLOB), compute the JA3 fingerprint \
-                         only for rows whose bytes actually look like a TLS handshake; skip the \
-                         rest. Return a single column named ja3.",
-                        "SELECT tlsfp.main.ja3(client_hello) AS ja3 FROM captured_handshakes WHERE \
-                         tlsfp.main.is_tls_handshake(client_hello)",
-                    ),
-                    (
-                        "worker_version",
-                        "What version of the tlsfp worker is currently running? Return a single \
-                         row with one column named version.",
-                        "SELECT tlsfp.main.tlsfp_version() AS version",
-                    ),
-                ]),
-            ),
+            ("vgi.agent_test_tasks".to_string(), agent_test_tasks_value()),
             ("vgi.author".to_string(), "Query.Farm".to_string()),
             (
                 "vgi.copyright".to_string(),
@@ -167,6 +203,32 @@ fn catalog_metadata(name: &str) -> CatalogModel {
                 ("category".to_string(), "fingerprinting".to_string()),
                 ("topic".to_string(), "tls-fingerprinting".to_string()),
                 (
+                    "vgi.categories".to_string(),
+                    crate::meta::categories_json(&[
+                        (
+                            "JA3 / JA3S",
+                            "Salesforce JA3 client and JA3S server fingerprints, computed from raw \
+                             handshake bytes or already-extracted fields, plus the pre-hash JA3 \
+                             string for audit.",
+                        ),
+                        (
+                            "JA4",
+                            "Base JA4 TLS-client fingerprints (FoxIO), computed from raw \
+                             ClientHello bytes or extracted fields, plus the un-hashed JA4_r form \
+                             for audit.",
+                        ),
+                        (
+                            "Parsing & guards",
+                            "Decode a ClientHello into its component fields and test whether raw \
+                             bytes are a TLS handshake before fingerprinting.",
+                        ),
+                        (
+                            "Worker",
+                            "Worker introspection, such as the running worker version.",
+                        ),
+                    ]),
+                ),
+                (
                     "vgi.doc_llm".to_string(),
                     "TLS fingerprint functions: ja3/ja3_string/ja3_from_parts, \
                      ja3s/ja3s_from_parts, ja4/ja4_raw/ja4_from_parts, parse_client_hello, and \
@@ -176,11 +238,22 @@ fn catalog_metadata(name: &str) -> CatalogModel {
                 ),
                 (
                     "vgi.doc_md".to_string(),
-                    "The single schema for the `tlsfp` worker. It holds the JA3, JA3S, and base \
-                     JA4 (TLS-client) fingerprint functions — each with a bytes mode and a \
-                     `*_from_parts` mode — plus the `ja3_string`/`ja4_raw` pre-hash companions, \
-                     the `parse_client_hello` decoder, the `is_tls_handshake` guard, and \
-                     `tlsfp_version`."
+                    "The single schema (`main`) for the `tlsfp` worker — its whole surface of \
+                     pure TLS-fingerprint scalars.\n\n\
+                     Each fingerprint offers two input modes: pass the **raw handshake record** \
+                     and let the worker parse it, or pass the **already-extracted fields** when a \
+                     tool such as Zeek has parsed the handshake for you. Both modes share the same \
+                     builders, so they always agree.\n\n\
+                     The functions group into a few families:\n\n\
+                     - **JA3 / JA3S** — Salesforce client and server fingerprints, with a pre-hash \
+                     string companion for audit.\n\
+                     - **JA4** — the base FoxIO TLS-client fingerprint, with its un-hashed raw \
+                     form for audit.\n\
+                     - **Parsing & guards** — decode a handshake into its component fields, and \
+                     cheaply test whether raw bytes even look like a TLS handshake before \
+                     fingerprinting.\n\n\
+                     Everything is deterministic compute with no network or state, and malformed \
+                     or truncated input yields `NULL` per row rather than failing the query."
                         .to_string(),
                 ),
                 (

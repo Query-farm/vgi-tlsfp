@@ -38,6 +38,26 @@ pub fn executable_examples_json(items: &[(&str, &str)]) -> String {
     format!("[{}]", objs.join(","))
 }
 
+/// Build the `vgi.categories` registry value: an ordered JSON array of
+/// `{"name","description"}` objects (VGI413). Each object then names one of these
+/// via its own `vgi.category` tag.
+pub fn categories_json(items: &[(&str, &str)]) -> String {
+    fn esc(s: &str) -> String {
+        s.replace('\\', "\\\\").replace('"', "\\\"")
+    }
+    let objs: Vec<String> = items
+        .iter()
+        .map(|(name, desc)| {
+            format!(
+                "{{\"name\":\"{}\",\"description\":\"{}\"}}",
+                esc(name),
+                esc(desc)
+            )
+        })
+        .collect();
+    format!("[{}]", objs.join(","))
+}
+
 /// Encode comma-separated keywords as the JSON array of strings `vgi.keywords`
 /// requires (VGI138), e.g. `["ja3","ja4","tls"]`.
 pub fn keywords_json(keywords: &str) -> String {
@@ -53,10 +73,20 @@ pub fn keywords_json(keywords: &str) -> String {
     format!("[{}]", items.join(","))
 }
 
-/// Build the `vgi.agent_test_tasks` JSON value: a fixed suite of analyst tasks
-/// `vgi-lint simulate` runs. Each `(name, prompt, reference_sql)` triple becomes
-/// a task object.
-pub fn agent_test_tasks_json(tasks: &[(&str, &str, &str)]) -> String {
+/// One analyst task for the `vgi.agent_test_tasks` suite that `vgi-lint simulate`
+/// grades: a `name`, the analyst-visible `prompt`, a deterministic canonical
+/// `reference_sql`, and the two grading opt-outs (`unordered` compares row-sets
+/// ignoring order; `ignore_column_names` compares by value only).
+pub struct AgentTask<'a> {
+    pub name: &'a str,
+    pub prompt: &'a str,
+    pub reference_sql: &'a str,
+    pub unordered: bool,
+    pub ignore_column_names: bool,
+}
+
+/// Build the `vgi.agent_test_tasks` JSON value from a fixed suite of tasks.
+pub fn agent_test_tasks_json(tasks: &[AgentTask]) -> String {
     fn esc(s: &str) -> String {
         s.replace('\\', "\\\\")
             .replace('"', "\\\"")
@@ -64,29 +94,36 @@ pub fn agent_test_tasks_json(tasks: &[(&str, &str, &str)]) -> String {
     }
     let items: Vec<String> = tasks
         .iter()
-        .map(|(name, prompt, reference_sql)| {
+        .map(|t| {
             format!(
-                "{{\"name\":\"{}\",\"prompt\":\"{}\",\"reference_sql\":\"{}\"}}",
-                esc(name),
-                esc(prompt),
-                esc(reference_sql)
+                "{{\"name\":\"{}\",\"prompt\":\"{}\",\"reference_sql\":\"{}\",\
+                 \"unordered\":{},\"ignore_column_names\":{}}}",
+                esc(t.name),
+                esc(t.prompt),
+                esc(t.reference_sql),
+                t.unordered,
+                t.ignore_column_names,
             )
         })
         .collect();
     format!("[{}]", items.join(","))
 }
 
-/// Build the four standard per-object discovery/description tags.
+/// Build the standard per-object discovery/description tags: `vgi.title`,
+/// `vgi.doc_llm`, `vgi.doc_md`, `vgi.keywords`, and `vgi.category` (which must
+/// name one of the schema's `vgi.categories`, VGI413).
 pub fn object_tags(
     title: &str,
     description_llm: &str,
     description_md: &str,
     keywords: &str,
+    category: &str,
 ) -> Vec<(String, String)> {
     vec![
         ("vgi.title".to_string(), title.to_string()),
         ("vgi.doc_llm".to_string(), description_llm.to_string()),
         ("vgi.doc_md".to_string(), description_md.to_string()),
         ("vgi.keywords".to_string(), keywords_json(keywords)),
+        ("vgi.category".to_string(), category.to_string()),
     ]
 }

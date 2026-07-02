@@ -63,6 +63,7 @@ impl ScalarFunction for Ja3 {
                      `ja3(client_hello)`. NULL if unparseable.",
                     "ja3, tls fingerprint, client fingerprint, clienthello, threat hunting, \
                      malware, c2, bot detection, md5, cluster",
+                    "JA3 / JA3S",
                 );
                 tags.push((
                     "vgi.executable_examples".to_string(),
@@ -132,6 +133,7 @@ impl ScalarFunction for Ja3String {
                  '771,4865-4866-…,0-23-…,29-23-…,0'.",
                 "ja3, ja3 string, pre-hash, audit, debug, clienthello, raw fingerprint, \
                  cipher list, extension list",
+                "JA3 / JA3S",
             ),
             ..Default::default()
         }
@@ -181,6 +183,7 @@ impl ScalarFunction for Ja3FromParts {
                  point_formats)`.",
                 "ja3, from parts, zeek, ssl.log, precomputed fields, ja3 from fields, cipher list, \
                  extension list, curves",
+                "JA3 / JA3S",
             ),
             ..Default::default()
         }
@@ -192,32 +195,31 @@ impl ScalarFunction for Ja3FromParts {
                 "version",
                 0,
                 DataType::Int32,
-                "The ClientHello legacy TLS version as a decimal integer, e.g. 771 for TLS 1.2.",
+                "The ClientHello legacy TLS version code point, e.g. 771 for TLS 1.2.",
             ),
             ArgSpec::column_typed(
                 "ciphers",
                 1,
                 list_int_type(),
-                "The list of offered cipher-suite code points (INTEGER[]); GREASE values are \
-                 ignored.",
+                "The offered cipher-suite code points, in wire order; GREASE values are ignored.",
             ),
             ArgSpec::column_typed(
                 "extensions",
                 2,
                 list_int_type(),
-                "The list of extension type code points (INTEGER[]); GREASE values are ignored.",
+                "The extension type code points, in wire order; GREASE values are ignored.",
             ),
             ArgSpec::column_typed(
                 "curves",
                 3,
                 list_int_type(),
-                "The list of supported elliptic-curve / named-group code points (INTEGER[]).",
+                "The supported elliptic-curve / named-group code points, in wire order.",
             ),
             ArgSpec::column_typed(
                 "point_formats",
                 4,
                 list_int_type(),
-                "The list of EC point-format code points (INTEGER[]), e.g. [0].",
+                "The EC point-format code points, in wire order, e.g. [0] for uncompressed.",
             ),
         ]
     }

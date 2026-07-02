@@ -32,6 +32,7 @@ impl ScalarFunction for TlsfpVersion {
                  diagnostics and confirming which build is attached.",
                 "Return the tlsfp worker version string, e.g. `tlsfp_version()` → '0.1.0'.",
                 "version, build version, tlsfp_version, diagnostics, worker version, semver",
+                "Worker",
             ),
             ..Default::default()
         }

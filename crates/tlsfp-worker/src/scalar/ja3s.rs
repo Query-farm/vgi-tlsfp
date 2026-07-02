@@ -48,6 +48,7 @@ impl ScalarFunction for Ja3s {
                  `ja3s(server_hello)`. NULL if unparseable.",
                 "ja3s, server fingerprint, serverhello, tls fingerprint, c2, malware server, \
                  cluster, md5",
+                "JA3 / JA3S",
             ),
             ..Default::default()
         }
@@ -99,6 +100,7 @@ impl ScalarFunction for Ja3sFromParts {
                 "JA3S from parsed fields, e.g. `ja3s_from_parts(771, 49199, extensions)`.",
                 "ja3s, from parts, zeek, ssl.log, precomputed fields, server fingerprint, \
                  selected cipher, extension list",
+                "JA3 / JA3S",
             ),
             ..Default::default()
         }
@@ -110,7 +112,7 @@ impl ScalarFunction for Ja3sFromParts {
                 "version",
                 0,
                 DataType::Int32,
-                "The ServerHello TLS version as a decimal integer, e.g. 771 for TLS 1.2.",
+                "The ServerHello TLS version code point, e.g. 771 for TLS 1.2.",
             ),
             ArgSpec::column_typed(
                 "cipher",
@@ -122,7 +124,7 @@ impl ScalarFunction for Ja3sFromParts {
                 "extensions",
                 2,
                 list_int_type(),
-                "The list of extension type code points the server returned (INTEGER[]); GREASE \
+                "The extension type code points the server returned, in wire order; GREASE \
                  values are ignored.",
             ),
         ]

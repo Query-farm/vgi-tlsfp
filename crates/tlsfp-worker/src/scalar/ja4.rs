@@ -64,6 +64,7 @@ impl ScalarFunction for Ja4 {
                  't13d…_…_…'. NULL if unparseable.",
                 "ja4, tls fingerprint, client fingerprint, clienthello, threat hunting, c2, \
                  bot detection, sha256, cluster, foxio",
+                "JA4",
             ),
             ..Default::default()
         }
@@ -115,6 +116,7 @@ impl ScalarFunction for Ja4Raw {
                  't13d1516h2_002f,0035,…_0005,000a,…_0403,0804,…'.",
                 "ja4, ja4_r, raw, un-hashed, audit, debug, clienthello, cipher list, \
                  extension list, signature algorithms",
+                "JA4",
             ),
             ..Default::default()
         }
@@ -166,6 +168,7 @@ impl ScalarFunction for Ja4FromParts {
                  'h2')`.",
                 "ja4, from parts, zeek, ssl.log, precomputed fields, ja4 from fields, alpn, \
                  signature algorithms, sorted",
+                "JA4",
             ),
             ..Default::default()
         }
@@ -177,29 +180,28 @@ impl ScalarFunction for Ja4FromParts {
                 "version",
                 0,
                 DataType::Int32,
-                "The effective TLS version code as a decimal integer (the highest non-GREASE \
-                 supported_versions value), e.g. 772 for TLS 1.3 or 771 for TLS 1.2.",
+                "The effective TLS version code point (the highest non-GREASE supported_versions \
+                 value), e.g. 772 for TLS 1.3 or 771 for TLS 1.2.",
             ),
             ArgSpec::column_typed(
                 "ciphers",
                 1,
                 list_int_type(),
-                "The list of offered cipher-suite code points (INTEGER[]); GREASE is ignored and \
-                 the list is sorted before hashing.",
+                "The offered cipher-suite code points; GREASE is ignored and the list is sorted \
+                 before hashing.",
             ),
             ArgSpec::column_typed(
                 "extensions",
                 2,
                 list_int_type(),
-                "The list of extension type code points (INTEGER[]); GREASE is ignored. Include \
-                 0 (SNI) to mark SNI present; SNI and ALPN are removed from the hashed set.",
+                "The extension type code points; GREASE is ignored. Include 0 (SNI) to mark SNI \
+                 present; SNI and ALPN are removed from the hashed set.",
             ),
             ArgSpec::column_typed(
                 "sig_algs",
                 3,
                 list_int_type(),
-                "The list of signature-algorithm code points (INTEGER[]), kept in original order \
-                 in the JA4_c hash.",
+                "The signature-algorithm code points, kept in original order in the JA4_c hash.",
             ),
             ArgSpec::column_typed(
                 "alpn",
