@@ -1974,7 +1974,7 @@ dependencies = [
 
 [[package]]
 name = "tlsfp-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "md-5",
  "proptest",
@@ -1983,7 +1983,7 @@ dependencies = [
 
 [[package]]
 name = "tlsfp-worker"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "arrow-array",
  "arrow-buffer",
