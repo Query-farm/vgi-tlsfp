@@ -33,7 +33,8 @@ use vgi::catalog::CatSchema;
 use vgi::catalog::CatalogModel;
 use vgi::Worker;
 
-/// Worker version string, surfaced by `tlsfp_version()`.
+/// Worker build version string, published as the catalog's
+/// `implementation_version` (read from `vgi_catalogs()`).
 pub fn version() -> &'static str {
     env!("CARGO_PKG_VERSION")
 }
@@ -98,13 +99,110 @@ fn agent_test_tasks_value() -> String {
             ignore_column_names: true,
         },
         AgentTask {
-            name: "worker_version",
-            prompt: "What version of the tlsfp worker is currently running? Return a single row \
-                     with one column named version.",
-            reference_sql: "SELECT tlsfp.main.tlsfp_version() AS version",
+            name: "ja3s_from_extracted_fields",
+            prompt: "A monitoring tool already parsed one ServerHello into these fields: TLS \
+                     version 771, the single selected cipher suite 49199, and returned extensions \
+                     [65281, 16]. Compute the JA3S fingerprint from those fields (no raw bytes). \
+                     Return one row with a single column named ja3s.",
+            reference_sql: "SELECT tlsfp.main.ja3s_from_parts(771, 49199, [65281, 16]) AS ja3s",
             unordered: false,
             ignore_column_names: true,
         },
+        AgentTask {
+            name: "ja3_pre_hash_string",
+            prompt: &format!(
+                "I have one TLS ClientHello whose raw bytes in hex are '{CH}'. Instead of the \
+                 hashed JA3, give me the un-hashed pre-hash JA3 string \
+                 (version,ciphers,extensions,curves,point_formats) so I can audit exactly which \
+                 fields feed the hash. Return one row with a single column named ja3_string."
+            ),
+            reference_sql: &format!("SELECT tlsfp.main.ja3_string(from_hex('{CH}')) AS ja3_string"),
+            unordered: false,
+            ignore_column_names: true,
+        },
+        AgentTask {
+            name: "ja4_raw_of_clienthello",
+            prompt: &format!(
+                "I have one TLS ClientHello whose raw bytes in hex are '{CH}'. Give me the raw, \
+                 un-hashed JA4_r form (with the cipher and extension lists spelled out rather \
+                 than hashed) so I can re-hash it under my own policy. Return one row with a \
+                 single column named ja4_raw."
+            ),
+            reference_sql: &format!("SELECT tlsfp.main.ja4_raw(from_hex('{CH}')) AS ja4_raw"),
+            unordered: false,
+            ignore_column_names: true,
+        },
+        AgentTask {
+            name: "ja4_from_extracted_fields",
+            prompt: "A Zeek ssl.log row already exposes these parsed ClientHello fields: \
+                     effective TLS version 772 (TLS 1.3), offered cipher suites [4865,4866], \
+                     extensions [0,43,13], signature algorithms [1027,2052], and first ALPN 'h2'. \
+                     Compute the base JA4 (TLS-client) fingerprint from those fields (no raw \
+                     bytes). Return one row with a single column named ja4.",
+            reference_sql: "SELECT tlsfp.main.ja4_from_parts(772, [4865,4866], [0,43,13], \
+                            [1027,2052], 'h2') AS ja4",
+            unordered: false,
+            ignore_column_names: true,
+        },
+        AgentTask {
+            name: "decode_clienthello_sni",
+            prompt: &format!(
+                "I captured one TLS ClientHello; its raw bytes in hex are '{CH}'. Decode it and \
+                 return just the SNI host name the client requested. Return one row with a single \
+                 column named sni."
+            ),
+            reference_sql: &format!(
+                "SELECT (tlsfp.main.parse_client_hello(from_hex('{CH}'))).sni AS sni"
+            ),
+            unordered: false,
+            ignore_column_names: true,
+        },
+    ])
+}
+
+/// The schema-level `vgi.example_queries` value: a described, self-contained
+/// example list (VGI515/VGI514). Every query binds against the attached worker
+/// alone — inputs are inline `from_hex(...)` literals or `VALUES` rows, never a
+/// reference to a table the caller would have to create — so `vgi-lint --execute`
+/// can run each one.
+fn schema_example_queries_value() -> String {
+    use crate::meta::SAMPLE_CLIENT_HELLO_HEX as CH;
+    use crate::meta::SAMPLE_SERVER_HELLO_HEX as SH;
+    crate::meta::example_queries_json(&[
+        (
+            "Cluster a set of captured ClientHellos by their JA3 and JA4 fingerprints, most \
+             frequent first — the headline threat-hunting query.",
+            &format!(
+                "SELECT tlsfp.main.ja3(client_hello) AS ja3, tlsfp.main.ja4(client_hello) AS ja4, \
+                 count(*) AS n FROM (VALUES (from_hex('{CH}')), (from_hex('{CH}'))) AS \
+                 t(client_hello) GROUP BY 1, 2 ORDER BY n DESC"
+            ),
+        ),
+        (
+            "Compute the JA3S server fingerprint of a captured ServerHello.",
+            &format!("SELECT tlsfp.main.ja3s(from_hex('{SH}')) AS ja3s"),
+        ),
+        (
+            "Compute JA3 from ClientHello fields already parsed by a tool such as Zeek (no raw \
+             bytes needed).",
+            "SELECT tlsfp.main.ja3_from_parts(771, [47, 53, 4865], [0, 11, 10], [29, 23], [0]) \
+             AS ja3",
+        ),
+        (
+            "Decode a ClientHello and project its SNI host name and cipher-suite list.",
+            &format!(
+                "SELECT (tlsfp.main.parse_client_hello(from_hex('{CH}'))).sni AS sni, \
+                 (tlsfp.main.parse_client_hello(from_hex('{CH}'))).ciphers AS ciphers"
+            ),
+        ),
+        (
+            "Fingerprint only the rows that structurally look like TLS handshakes, skipping junk \
+             bytes with the is_tls_handshake guard.",
+            &format!(
+                "SELECT tlsfp.main.ja4(pkt) AS ja4 FROM (VALUES (from_hex('{CH}')), \
+                 (from_hex('00'))) AS t(pkt) WHERE tlsfp.main.is_tls_handshake(pkt)"
+            ),
+        ),
     ])
 }
 
@@ -146,8 +244,8 @@ fn catalog_metadata(name: &str) -> CatalogModel {
                  DuckDB SQL** from raw `ClientHello`/`ServerHello` bytes — or from fields you \
                  already extracted with Zeek/pcap tooling. Apply a fingerprint to a column of \
                  captured handshakes and `GROUP BY` it to surface a C2 or bot family, then JOIN \
-                 the resulting VARCHAR hashes to certificate (`vgi-x509`) and flow (`vgi-netflow`) \
-                 data to pivot from a fingerprint to the certs and flows behind it.\n\n\
+                 the resulting `VARCHAR` hashes to certificate and flow data to pivot from a \
+                 fingerprint to the certs and flows behind it.\n\n\
                  Every function is pure, deterministic compute — no network, no state. Each \
                  fingerprint offers two input modes: pass the **raw handshake record** (the worker \
                  parses it) or the **component fields**. Malformed or truncated bytes return \
@@ -158,9 +256,7 @@ fn catalog_metadata(name: &str) -> CatalogModel {
                  **Licensing:** only the patent-free fingerprints are implemented — JA3/JA3S \
                  (BSD-3) and base JA4 TLS-client (BSD-3, patent-disclaimed). The JA4+ suite \
                  (JA4S/JA4H/JA4L/JA4X/JA4SSH, FoxIO License 1.1, patent-pending) and JARM are \
-                 intentionally NOT implemented. The `tlsfp` worker is part of the \
-                 [Query.Farm](https://query.farm) VGI ecosystem of DuckDB workers — see the \
-                 [source repository](https://github.com/Query-farm/vgi-tlsfp)."
+                 intentionally NOT implemented."
                     .to_string(),
             ),
             ("vgi.agent_test_tasks".to_string(), agent_test_tasks_value()),
@@ -180,6 +276,10 @@ fn catalog_metadata(name: &str) -> CatalogModel {
             ),
         ],
         source_url: Some("https://github.com/Query-farm/vgi-tlsfp".to_string()),
+        // The running worker build version, surfaced on the catalog itself so an
+        // agent reads it from vgi_catalogs() without spending a query — replaces
+        // the removed parameterless tlsfp_version() scalar (VGI328).
+        implementation_version: Some(version().to_string()),
         schemas: vec![CatSchema {
             name: "main".to_string(),
             comment: Some(
@@ -222,10 +322,6 @@ fn catalog_metadata(name: &str) -> CatalogModel {
                             "Decode a ClientHello into its component fields and test whether raw \
                              bytes are a TLS handshake before fingerprinting.",
                         ),
-                        (
-                            "Worker",
-                            "Worker introspection, such as the running worker version.",
-                        ),
                     ]),
                 ),
                 (
@@ -256,19 +352,7 @@ fn catalog_metadata(name: &str) -> CatalogModel {
                      or truncated input yields `NULL` per row rather than failing the query."
                         .to_string(),
                 ),
-                (
-                    "vgi.example_queries".to_string(),
-                    "SELECT tlsfp.main.ja3(client_hello) AS ja3, tlsfp.main.ja4(client_hello) AS \
-                     ja4, count(*) n FROM captured_handshakes GROUP BY 1,2 ORDER BY n DESC;\n\
-                     SELECT tlsfp.main.ja3s(server_hello) FROM captured_handshakes;\n\
-                     SELECT tlsfp.main.ja3_from_parts(771, ciphers, extensions, curves, \
-                     point_formats) FROM zeek_ssl;\n\
-                     SELECT tlsfp.main.parse_client_hello(client_hello).* FROM \
-                     captured_handshakes;\n\
-                     SELECT tlsfp.main.ja4(client_hello) FROM captured_handshakes WHERE \
-                     tlsfp.main.is_tls_handshake(client_hello);"
-                        .to_string(),
-                ),
+                ("vgi.example_queries".to_string(), schema_example_queries_value()),
             ],
             views: Vec::new(),
             macros: Vec::new(),

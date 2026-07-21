@@ -38,19 +38,32 @@ impl ScalarFunction for IsTlsHandshake {
                     .into(),
                 expected_output: None,
             }],
-            tags: crate::meta::object_tags(
-                "TLS Handshake Detector",
-                "Return TRUE when the input bytes structurally resemble a TLS ClientHello or \
-                 ServerHello handshake record (a valid handshake type and a self-consistent \
-                 length), and FALSE otherwise. Totally safe on arbitrary bytes — it never errors \
-                 — so it is the recommended WHERE-clause guard before calling ja3/ja3s/ja4. NULL \
-                 input returns NULL.",
-                "Guard scalar: TRUE iff `bytes` look like a TLS ClientHello/ServerHello, e.g. \
-                 `WHERE is_tls_handshake(pkt)`.",
-                "tls, handshake, clienthello, serverhello, guard, validate, is tls, filter, \
-                 detect tls",
-                "Parsing & guards",
-            ),
+            tags: {
+                let mut tags = crate::meta::object_tags(
+                    "TLS Handshake Detector",
+                    "Return TRUE when the input bytes structurally resemble a TLS ClientHello or \
+                     ServerHello handshake record (a valid handshake type and a self-consistent \
+                     length), and FALSE otherwise. Totally safe on arbitrary bytes — it never \
+                     errors — so it is the recommended WHERE-clause guard before calling \
+                     ja3/ja3s/ja4. NULL input returns NULL.",
+                    "Guard scalar: TRUE iff `bytes` look like a TLS ClientHello/ServerHello, e.g. \
+                     `WHERE is_tls_handshake(pkt)`.",
+                    "tls, handshake, clienthello, serverhello, guard, validate, is tls, filter, \
+                     detect tls",
+                    "Parsing & guards",
+                );
+                tags.push((
+                    "vgi.example_queries".to_string(),
+                    crate::meta::example_queries_json(&[(
+                        "Filter a column to plausible TLS handshakes before fingerprinting.",
+                        &format!(
+                            "SELECT tlsfp.main.is_tls_handshake(from_hex('{}'));",
+                            crate::meta::SAMPLE_CLIENT_HELLO_HEX
+                        ),
+                    )]),
+                ));
+                tags
+            },
             ..Default::default()
         }
     }

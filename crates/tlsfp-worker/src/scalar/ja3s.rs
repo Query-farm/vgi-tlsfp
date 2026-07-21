@@ -37,19 +37,33 @@ impl ScalarFunction for Ja3s {
                 description: "Fingerprint the server side of a handshake with JA3S.".into(),
                 expected_output: None,
             }],
-            tags: crate::meta::object_tags(
-                "JA3S Server Fingerprint",
-                "Compute the JA3S TLS server fingerprint — the 32-hex MD5 of the ServerHello's \
-                 version, the single selected cipher suite, and the server's extension list \
-                 (GREASE stripped). Accepts a full TLS record or a bare handshake message; returns \
-                 NULL for bytes that do not parse as a ServerHello. Paired with JA3, it captures \
-                 how a server responds to a given client and helps cluster C2 servers.",
-                "JA3S server fingerprint (MD5 hex) of a raw ServerHello, e.g. \
-                 `ja3s(server_hello)`. NULL if unparseable.",
-                "ja3s, server fingerprint, serverhello, tls fingerprint, c2, malware server, \
-                 cluster, md5",
-                "JA3 / JA3S",
-            ),
+            tags: {
+                let mut tags = crate::meta::object_tags(
+                    "JA3S Server Fingerprint",
+                    "Compute the JA3S TLS server fingerprint — the 32-hex MD5 of the ServerHello's \
+                     version, the single selected cipher suite, and the server's extension list \
+                     (GREASE stripped). Accepts a full TLS record or a bare handshake message; \
+                     returns NULL for bytes that do not parse as a ServerHello. Paired with JA3, \
+                     it captures how a server responds to a given client and helps cluster C2 \
+                     servers.",
+                    "JA3S server fingerprint (MD5 hex) of a raw ServerHello, e.g. \
+                     `ja3s(server_hello)`. NULL if unparseable.",
+                    "ja3s, server fingerprint, serverhello, tls fingerprint, c2, malware server, \
+                     cluster, md5",
+                    "JA3 / JA3S",
+                );
+                tags.push((
+                    "vgi.example_queries".to_string(),
+                    crate::meta::example_queries_json(&[(
+                        "Fingerprint the server side of a handshake with JA3S.",
+                        &format!(
+                            "SELECT tlsfp.main.ja3s(from_hex('{}'));",
+                            crate::meta::SAMPLE_SERVER_HELLO_HEX
+                        ),
+                    )]),
+                ));
+                tags
+            },
             ..Default::default()
         }
     }
@@ -91,17 +105,28 @@ impl ScalarFunction for Ja3sFromParts {
                 description: "Compute JA3S from fields already parsed by Zeek/pcap tooling.".into(),
                 expected_output: None,
             }],
-            tags: crate::meta::object_tags(
-                "JA3S From Extracted Fields",
-                "Compute the JA3S fingerprint from the already-extracted ServerHello fields — the \
-                 TLS version, the single cipher suite the server selected, and the server's \
-                 extension list — for callers who parsed the handshake elsewhere (e.g. Zeek). \
-                 GREASE values in the extension list are stripped exactly as in the bytes path.",
-                "JA3S from parsed fields, e.g. `ja3s_from_parts(771, 49199, extensions)`.",
-                "ja3s, from parts, zeek, ssl.log, precomputed fields, server fingerprint, \
-                 selected cipher, extension list",
-                "JA3 / JA3S",
-            ),
+            tags: {
+                let mut tags = crate::meta::object_tags(
+                    "JA3S From Extracted Fields",
+                    "Compute the JA3S fingerprint from the already-extracted ServerHello fields — \
+                     the TLS version, the single cipher suite the server selected, and the \
+                     server's extension list — for callers who parsed the handshake elsewhere \
+                     (e.g. Zeek). GREASE values in the extension list are stripped exactly as in \
+                     the bytes path.",
+                    "JA3S from parsed fields, e.g. `ja3s_from_parts(771, 49199, extensions)`.",
+                    "ja3s, from parts, zeek, ssl.log, precomputed fields, server fingerprint, \
+                     selected cipher, extension list",
+                    "JA3 / JA3S",
+                );
+                tags.push((
+                    "vgi.example_queries".to_string(),
+                    crate::meta::example_queries_json(&[(
+                        "Compute JA3S from fields already parsed by Zeek/pcap tooling.",
+                        "SELECT tlsfp.main.ja3s_from_parts(771, 49199, [65281, 16]);",
+                    )]),
+                ));
+                tags
+            },
             ..Default::default()
         }
     }

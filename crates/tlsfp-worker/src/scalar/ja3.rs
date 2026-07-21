@@ -66,6 +66,16 @@ impl ScalarFunction for Ja3 {
                     "JA3 / JA3S",
                 );
                 tags.push((
+                    "vgi.example_queries".to_string(),
+                    crate::meta::example_queries_json(&[(
+                        "Compute the JA3 fingerprint of a captured ClientHello.",
+                        &format!(
+                            "SELECT tlsfp.main.ja3(from_hex('{}'));",
+                            crate::meta::SAMPLE_CLIENT_HELLO_HEX
+                        ),
+                    )]),
+                ));
+                tags.push((
                     "vgi.executable_examples".to_string(),
                     crate::meta::executable_examples_json(&[
                         (
@@ -123,18 +133,31 @@ impl ScalarFunction for Ja3String {
                 description: "Inspect the un-hashed JA3 string for audit/debugging.".into(),
                 expected_output: None,
             }],
-            tags: crate::meta::object_tags(
-                "JA3 String (pre-hash)",
-                "Return the un-hashed JA3 string for a raw ClientHello: the decimal \
-                 SSLVersion,Cipher,SSLExtension,EllipticCurve,EllipticCurvePointFormat fields \
-                 (GREASE stripped) that JA3 hashes with MD5. Exposed for audit, debugging, and \
-                 re-hashing under a custom policy. NULL when the bytes do not parse.",
-                "Pre-hash JA3 string of a ClientHello, e.g. `ja3_string(client_hello)` → \
-                 '771,4865-4866-…,0-23-…,29-23-…,0'.",
-                "ja3, ja3 string, pre-hash, audit, debug, clienthello, raw fingerprint, \
-                 cipher list, extension list",
-                "JA3 / JA3S",
-            ),
+            tags: {
+                let mut tags = crate::meta::object_tags(
+                    "JA3 String (pre-hash)",
+                    "Return the un-hashed JA3 string for a raw ClientHello: the decimal \
+                     SSLVersion,Cipher,SSLExtension,EllipticCurve,EllipticCurvePointFormat fields \
+                     (GREASE stripped) that JA3 hashes with MD5. Exposed for audit, debugging, and \
+                     re-hashing under a custom policy. NULL when the bytes do not parse.",
+                    "Pre-hash JA3 string of a ClientHello, e.g. `ja3_string(client_hello)` → \
+                     '771,4865-4866-…,0-23-…,29-23-…,0'.",
+                    "ja3, ja3 string, pre-hash, audit, debug, clienthello, raw fingerprint, \
+                     cipher list, extension list",
+                    "JA3 / JA3S",
+                );
+                tags.push((
+                    "vgi.example_queries".to_string(),
+                    crate::meta::example_queries_json(&[(
+                        "Inspect the un-hashed JA3 string for audit/debugging.",
+                        &format!(
+                            "SELECT tlsfp.main.ja3_string(from_hex('{}'));",
+                            crate::meta::SAMPLE_CLIENT_HELLO_HEX
+                        ),
+                    )]),
+                ));
+                tags
+            },
             ..Default::default()
         }
     }
@@ -172,19 +195,31 @@ impl ScalarFunction for Ja3FromParts {
                 description: "Compute JA3 from fields already parsed by Zeek/pcap tooling.".into(),
                 expected_output: None,
             }],
-            tags: crate::meta::object_tags(
-                "JA3 From Extracted Fields",
-                "Compute the JA3 fingerprint from the already-extracted ClientHello component \
-                 fields — the TLS version, the cipher-suite list, the extension list, the \
-                 elliptic-curve (supported_groups) list, and the EC point-format list — for \
-                 callers who parsed the handshake elsewhere (e.g. Zeek's ssl.log). GREASE values \
-                 are stripped exactly as in the bytes path, so the two modes always agree.",
-                "JA3 from parsed fields, e.g. `ja3_from_parts(771, ciphers, extensions, curves, \
-                 point_formats)`.",
-                "ja3, from parts, zeek, ssl.log, precomputed fields, ja3 from fields, cipher list, \
-                 extension list, curves",
-                "JA3 / JA3S",
-            ),
+            tags: {
+                let mut tags = crate::meta::object_tags(
+                    "JA3 From Extracted Fields",
+                    "Compute the JA3 fingerprint from the already-extracted ClientHello component \
+                     fields — the TLS version, the cipher-suite list, the extension list, the \
+                     elliptic-curve (supported_groups) list, and the EC point-format list — for \
+                     callers who parsed the handshake elsewhere (e.g. Zeek's ssl.log). GREASE \
+                     values are stripped exactly as in the bytes path, so the two modes always \
+                     agree.",
+                    "JA3 from parsed fields, e.g. `ja3_from_parts(771, ciphers, extensions, \
+                     curves, point_formats)`.",
+                    "ja3, from parts, zeek, ssl.log, precomputed fields, ja3 from fields, cipher \
+                     list, extension list, curves",
+                    "JA3 / JA3S",
+                );
+                tags.push((
+                    "vgi.example_queries".to_string(),
+                    crate::meta::example_queries_json(&[(
+                        "Compute JA3 from fields already parsed by Zeek/pcap tooling.",
+                        "SELECT tlsfp.main.ja3_from_parts(771, [47,53,4865], [0,11,10], [29,23], \
+                         [0]);",
+                    )]),
+                ));
+                tags
+            },
             ..Default::default()
         }
     }

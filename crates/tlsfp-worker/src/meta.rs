@@ -19,6 +19,15 @@ pub const SAMPLE_SERVER_HELLO_HEX: &str =
     "020000360303222222222222222222222222222222222222222222222222222222222222222200c02f00000eff0100\
 0100001000050003026832";
 
+/// Build a `vgi.example_queries` JSON value from `(description, sql)` pairs — the
+/// described-example carrier VGI515 requires (the native `duckdb_functions()`
+/// examples column drops descriptions, so every curated example is mirrored here
+/// with its human-readable description). Same `[{"description","sql"}]` shape as
+/// `executable_examples_json`.
+pub fn example_queries_json(items: &[(&str, &str)]) -> String {
+    executable_examples_json(items)
+}
+
 /// Build a `vgi.executable_examples` JSON value from `(description, sql)` pairs —
 /// guaranteed-runnable, catalog-qualified queries (VGI509).
 pub fn executable_examples_json(items: &[(&str, &str)]) -> String {

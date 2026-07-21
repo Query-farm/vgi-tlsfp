@@ -37,7 +37,7 @@ crates/tlsfp-worker/   Arrow adapters + VGI registration
   src/main.rs          catalog metadata + Worker wiring
   src/arrow_io.rs      BLOB/int/LIST readers + the parse_client_hello STRUCT schema
   src/meta.rs          per-object metadata helpers + sample-hex constants
-  src/scalar/*.rs      one module per function family (version, guard, ja3, ja3s, ja4, decode)
+  src/scalar/*.rs      one module per function family (guard, ja3, ja3s, ja4, decode)
   src/fixtures.rs      (test-only) canonical handshake byte fixtures
 ci/                    haybarn integration runner + version check + require-rewrite awk
 test/sql/              sqllogictest E2E suite

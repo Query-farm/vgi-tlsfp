@@ -57,20 +57,33 @@ impl ScalarFunction for ParseClientHello {
                 description: "Decode the fingerprint-relevant fields of a ClientHello.".into(),
                 expected_output: None,
             }],
-            tags: crate::meta::object_tags(
-                "ClientHello Decoder",
-                "Decode a raw TLS ClientHello into a struct of its fingerprint-relevant fields: \
-                 the legacy TLS version, the SNI host name (NULL if absent), the cipher-suite \
-                 list, the extension-type list, the elliptic-curve (supported_groups) list, and \
-                 the ALPN protocol list. This is a faithful decode that PRESERVES GREASE values \
-                 (the ja3/ja4 functions strip them). Returns a NULL struct for bytes that do not \
-                 parse as a ClientHello.",
-                "Decode a ClientHello into STRUCT(version, sni, ciphers, extensions, curves, \
-                 alpn), e.g. `parse_client_hello(client_hello).*`.",
-                "parse, decode, clienthello, tls, sni, ciphers, extensions, curves, alpn, \
-                 struct, inspect handshake",
-                "Parsing & guards",
-            ),
+            tags: {
+                let mut tags = crate::meta::object_tags(
+                    "ClientHello Decoder",
+                    "Decode a raw TLS ClientHello into a struct of its fingerprint-relevant \
+                     fields: the legacy TLS version, the SNI host name (NULL if absent), the \
+                     cipher-suite list, the extension-type list, the elliptic-curve \
+                     (supported_groups) list, and the ALPN protocol list. This is a faithful \
+                     decode that PRESERVES GREASE values (the ja3/ja4 functions strip them). \
+                     Returns a NULL struct for bytes that do not parse as a ClientHello.",
+                    "Decode a ClientHello into `STRUCT(version, sni, ciphers, extensions, curves, \
+                     alpn)`, e.g. `parse_client_hello(client_hello).*`.",
+                    "parse, decode, clienthello, tls, sni, ciphers, extensions, curves, alpn, \
+                     struct, inspect handshake",
+                    "Parsing & guards",
+                );
+                tags.push((
+                    "vgi.example_queries".to_string(),
+                    crate::meta::example_queries_json(&[(
+                        "Decode the fingerprint-relevant fields of a ClientHello.",
+                        &format!(
+                            "SELECT (tlsfp.main.parse_client_hello(from_hex('{}'))).sni;",
+                            crate::meta::SAMPLE_CLIENT_HELLO_HEX
+                        ),
+                    )]),
+                ));
+                tags
+            },
             ..Default::default()
         }
     }

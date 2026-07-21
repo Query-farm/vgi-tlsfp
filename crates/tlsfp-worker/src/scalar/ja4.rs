@@ -52,20 +52,34 @@ impl ScalarFunction for Ja4 {
                 description: "Compute the JA4 fingerprint of a captured ClientHello.".into(),
                 expected_output: None,
             }],
-            tags: crate::meta::object_tags(
-                "JA4 Client Fingerprint",
-                "Compute the JA4 base TLS-client fingerprint of a raw ClientHello, e.g. \
-                 't13d1516h2_8daaf6152771_e5627efa2ab1'. JA4_a encodes the transport, TLS version, \
-                 SNI presence, cipher/extension counts, and ALPN; JA4_b and JA4_c are truncated \
-                 SHA-256 hashes of the sorted cipher and extension lists (GREASE stripped). More \
-                 robust than JA3 because the inputs are sorted. Returns NULL for non-ClientHello \
-                 bytes. (Only the base JA4 TLS-client fingerprint is provided — not the JA4+ suite.)",
-                "JA4 TLS-client fingerprint of a raw ClientHello, e.g. `ja4(client_hello)` → \
-                 't13d…_…_…'. NULL if unparseable.",
-                "ja4, tls fingerprint, client fingerprint, clienthello, threat hunting, c2, \
-                 bot detection, sha256, cluster, foxio",
-                "JA4",
-            ),
+            tags: {
+                let mut tags = crate::meta::object_tags(
+                    "JA4 Client Fingerprint",
+                    "Compute the JA4 base TLS-client fingerprint of a raw ClientHello, e.g. \
+                     't13d1516h2_8daaf6152771_e5627efa2ab1'. JA4_a encodes the transport, TLS \
+                     version, SNI presence, cipher/extension counts, and ALPN; JA4_b and JA4_c \
+                     are truncated SHA-256 hashes of the sorted cipher and extension lists (GREASE \
+                     stripped). More robust than JA3 because the inputs are sorted. Returns NULL \
+                     for non-ClientHello bytes. (Only the base JA4 TLS-client fingerprint is \
+                     provided — not the JA4+ suite.)",
+                    "JA4 TLS-client fingerprint of a raw ClientHello, e.g. `ja4(client_hello)` → \
+                     't13d…_…_…'. NULL if unparseable.",
+                    "ja4, tls fingerprint, client fingerprint, clienthello, threat hunting, c2, \
+                     bot detection, sha256, cluster, foxio",
+                    "JA4",
+                );
+                tags.push((
+                    "vgi.example_queries".to_string(),
+                    crate::meta::example_queries_json(&[(
+                        "Compute the JA4 fingerprint of a captured ClientHello.",
+                        &format!(
+                            "SELECT tlsfp.main.ja4(from_hex('{}'));",
+                            crate::meta::SAMPLE_CLIENT_HELLO_HEX
+                        ),
+                    )]),
+                ));
+                tags
+            },
             ..Default::default()
         }
     }
@@ -105,19 +119,33 @@ impl ScalarFunction for Ja4Raw {
                 description: "Inspect the un-hashed JA4_r string for audit/debugging.".into(),
                 expected_output: None,
             }],
-            tags: crate::meta::object_tags(
-                "JA4_r (raw, un-hashed)",
-                "Return the raw JA4_r form of a ClientHello: the JA4_a prefix, then the sorted \
-                 GREASE-stripped cipher list, the sorted extension list (SNI and ALPN removed), \
-                 and the signature-algorithm list in original order — all as comma-separated \
-                 4-hex values rather than hashed. Exposed for audit, debugging, and re-hashing \
-                 under a custom policy. NULL when the bytes do not parse.",
-                "Raw, un-hashed JA4_r string, e.g. `ja4_raw(client_hello)` → \
-                 't13d1516h2_002f,0035,…_0005,000a,…_0403,0804,…'.",
-                "ja4, ja4_r, raw, un-hashed, audit, debug, clienthello, cipher list, \
-                 extension list, signature algorithms",
-                "JA4",
-            ),
+            tags: {
+                let mut tags = crate::meta::object_tags(
+                    "JA4_r (raw, un-hashed)",
+                    "Return the raw JA4_r form of a ClientHello: the JA4_a prefix, then the sorted \
+                     GREASE-stripped cipher list, the sorted extension list (SNI and ALPN \
+                     removed), and the signature-algorithm list in original order — all as \
+                     comma-separated 4-hex values rather than hashed. Exposed for audit, \
+                     debugging, and re-hashing under a custom policy. NULL when the bytes do not \
+                     parse.",
+                    "Raw, un-hashed JA4_r string, e.g. `ja4_raw(client_hello)` → \
+                     't13d1516h2_002f,0035,…_0005,000a,…_0403,0804,…'.",
+                    "ja4, ja4_r, raw, un-hashed, audit, debug, clienthello, cipher list, \
+                     extension list, signature algorithms",
+                    "JA4",
+                );
+                tags.push((
+                    "vgi.example_queries".to_string(),
+                    crate::meta::example_queries_json(&[(
+                        "Inspect the un-hashed JA4_r string for audit/debugging.",
+                        &format!(
+                            "SELECT tlsfp.main.ja4_raw(from_hex('{}'));",
+                            crate::meta::SAMPLE_CLIENT_HELLO_HEX
+                        ),
+                    )]),
+                ));
+                tags
+            },
             ..Default::default()
         }
     }
@@ -156,20 +184,31 @@ impl ScalarFunction for Ja4FromParts {
                 description: "Compute JA4 from fields already parsed by Zeek/pcap tooling.".into(),
                 expected_output: None,
             }],
-            tags: crate::meta::object_tags(
-                "JA4 From Extracted Fields",
-                "Compute the JA4 base TLS-client fingerprint from already-extracted ClientHello \
-                 fields: the effective TLS version code (e.g. 772 for TLS 1.3), the cipher-suite \
-                 list, the extension list (SNI presence is inferred from whether it contains \
-                 0x0000=0), the signature-algorithm list (kept in order), and the first ALPN \
-                 value (e.g. 'h2', empty string for none). GREASE is stripped exactly as in the \
-                 bytes path so the two modes agree.",
-                "JA4 from parsed fields, e.g. `ja4_from_parts(772, ciphers, extensions, sig_algs, \
-                 'h2')`.",
-                "ja4, from parts, zeek, ssl.log, precomputed fields, ja4 from fields, alpn, \
-                 signature algorithms, sorted",
-                "JA4",
-            ),
+            tags: {
+                let mut tags = crate::meta::object_tags(
+                    "JA4 From Extracted Fields",
+                    "Compute the JA4 base TLS-client fingerprint from already-extracted \
+                     ClientHello fields: the effective TLS version code (e.g. 772 for TLS 1.3), \
+                     the cipher-suite list, the extension list (SNI presence is inferred from \
+                     whether it contains 0x0000=0), the signature-algorithm list (kept in order), \
+                     and the first ALPN value (e.g. 'h2', empty string for none). GREASE is \
+                     stripped exactly as in the bytes path so the two modes agree.",
+                    "JA4 from parsed fields, e.g. `ja4_from_parts(772, ciphers, extensions, \
+                     sig_algs, 'h2')`.",
+                    "ja4, from parts, zeek, ssl.log, precomputed fields, ja4 from fields, alpn, \
+                     signature algorithms, sorted",
+                    "JA4",
+                );
+                tags.push((
+                    "vgi.example_queries".to_string(),
+                    crate::meta::example_queries_json(&[(
+                        "Compute JA4 from fields already parsed by Zeek/pcap tooling.",
+                        "SELECT tlsfp.main.ja4_from_parts(772, [4865,4866], [0,43,13], [1027,2052], \
+                         'h2');",
+                    )]),
+                ));
+                tags
+            },
             ..Default::default()
         }
     }

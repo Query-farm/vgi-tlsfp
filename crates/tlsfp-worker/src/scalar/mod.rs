@@ -10,7 +10,6 @@ mod guard;
 mod ja3;
 mod ja3s;
 mod ja4;
-mod version;
 
 use std::sync::Arc;
 
@@ -23,7 +22,6 @@ use crate::arrow_io::blob_bytes;
 
 /// Register every scalar function on the worker.
 pub fn register(worker: &mut Worker) {
-    worker.register_scalar(version::TlsfpVersion);
     worker.register_scalar(guard::IsTlsHandshake);
     worker.register_scalar(ja3::Ja3);
     worker.register_scalar(ja3::Ja3String);
@@ -42,7 +40,6 @@ pub fn register(worker: &mut Worker) {
 #[cfg(test)]
 pub fn registered_scalar_names() -> Vec<&'static str> {
     vec![
-        "tlsfp_version",
         "is_tls_handshake",
         "ja3",
         "ja3_string",
