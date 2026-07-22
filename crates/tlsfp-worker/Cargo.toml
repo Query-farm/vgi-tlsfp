@@ -8,19 +8,37 @@ authors.workspace = true
 repository.workspace = true
 description = "VGI worker computing TLS client/server fingerprints (JA3, JA3S, JA4 TLS-client) as SQL scalars over raw handshake bytes for DuckDB via Apache Arrow"
 
+# Function registration and catalog metadata live in the library so both
+# entrypoints share them verbatim: src/main.rs (the native binary) and the
+# tlsfp-wasm crate (the browser build, served over a SharedArrayBuffer channel).
+[lib]
+name = "tlsfp_worker"
+path = "src/lib.rs"
+
 [[bin]]
 name = "tlsfp-worker"
 path = "src/main.rs"
 
 [dependencies]
-vgi.workspace = true
-vgi-rpc.workspace = true
 arrow-array.workspace = true
 arrow-buffer.workspace = true
 arrow-schema.workspace = true
 tlsfp-core.workspace = true
 log = "0.4"
+
+# --- Native ---------------------------------------------------------------
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+# The SDK's real default features — sqlite + HTTP transport.
+vgi = { workspace = true, features = ["sqlite", "transport-http"] }
+vgi-rpc = { workspace = true, features = ["http"] }
 env_logger = "0.11"
+
+# --- wasm32 ---------------------------------------------------------------
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+# No sqlite (C) and no HTTP transport (tokio/mio/axum); the bincode stream codec
+# is what the SAB byte-channel transport needs. No env_logger.
+vgi = { workspace = true }
+vgi-rpc = { workspace = true, features = ["stream-codec"] }
 
 [dev-dependencies]
 # Used only by the Arrow-boundary tests to independently re-derive a JA3 MD5 from

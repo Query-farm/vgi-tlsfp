@@ -2,6 +2,8 @@
 /build
 **/*.rs.bk
 .DS_Store
+# Browser build output (wasm/build.sh)
+/wasm/dist
 duckdb_unittest_tempdir/
 # vgi-lint --ai / simulate caches (LLM review + agent-simulation results)
 .vgi-*-cache.json
