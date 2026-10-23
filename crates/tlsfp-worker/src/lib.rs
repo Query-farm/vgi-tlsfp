@@ -62,9 +62,6 @@ fn agent_test_tasks_value() -> String {
                  base JA4 (TLS-client) fingerprint. Return one row with a single column named \
                  ja4."
             ),
-            reference_sql: &format!("SELECT tlsfp.main.ja4(from_hex('{CH}')) AS ja4"),
-            unordered: false,
-            ignore_column_names: true,
         },
         AgentTask {
             name: "ja3_from_extracted_fields",
@@ -73,10 +70,6 @@ fn agent_test_tasks_value() -> String {
                      [0,11,10,13], elliptic curves [29,23,24], and EC point formats [0]. Compute \
                      the JA3 fingerprint from those fields (no raw bytes). Return one row with a \
                      single column named ja3.",
-            reference_sql: "SELECT tlsfp.main.ja3_from_parts(771, [4865,4866,4867,49195,49199], \
-                            [0,11,10,13], [29,23,24], [0]) AS ja3",
-            unordered: false,
-            ignore_column_names: true,
         },
         AgentTask {
             name: "guard_then_ja3",
@@ -86,12 +79,6 @@ fn agent_test_tasks_value() -> String {
                  one row with exactly two columns, in this order: is_handshake (the boolean guard \
                  result) then ja3 (the fingerprint)."
             ),
-            reference_sql: &format!(
-                "SELECT tlsfp.main.is_tls_handshake(from_hex('{CH}')) AS is_handshake, \
-                 tlsfp.main.ja3(from_hex('{CH}')) AS ja3"
-            ),
-            unordered: false,
-            ignore_column_names: true,
         },
         AgentTask {
             name: "ja3s_of_serverhello",
@@ -99,9 +86,6 @@ fn agent_test_tasks_value() -> String {
                 "I captured one TLS ServerHello; its raw bytes in hex are '{SH}'. Compute its \
                  JA3S (server) fingerprint. Return one row with a single column named ja3s."
             ),
-            reference_sql: &format!("SELECT tlsfp.main.ja3s(from_hex('{SH}')) AS ja3s"),
-            unordered: false,
-            ignore_column_names: true,
         },
         AgentTask {
             name: "ja3s_from_extracted_fields",
@@ -109,9 +93,6 @@ fn agent_test_tasks_value() -> String {
                      version 771, the single selected cipher suite 49199, and returned extensions \
                      [65281, 16]. Compute the JA3S fingerprint from those fields (no raw bytes). \
                      Return one row with a single column named ja3s.",
-            reference_sql: "SELECT tlsfp.main.ja3s_from_parts(771, 49199, [65281, 16]) AS ja3s",
-            unordered: false,
-            ignore_column_names: true,
         },
         AgentTask {
             name: "ja3_pre_hash_string",
@@ -121,9 +102,6 @@ fn agent_test_tasks_value() -> String {
                  (version,ciphers,extensions,curves,point_formats) so I can audit exactly which \
                  fields feed the hash. Return one row with a single column named ja3_string."
             ),
-            reference_sql: &format!("SELECT tlsfp.main.ja3_string(from_hex('{CH}')) AS ja3_string"),
-            unordered: false,
-            ignore_column_names: true,
         },
         AgentTask {
             name: "ja4_raw_of_clienthello",
@@ -133,9 +111,6 @@ fn agent_test_tasks_value() -> String {
                  than hashed) so I can re-hash it under my own policy. Return one row with a \
                  single column named ja4_raw."
             ),
-            reference_sql: &format!("SELECT tlsfp.main.ja4_raw(from_hex('{CH}')) AS ja4_raw"),
-            unordered: false,
-            ignore_column_names: true,
         },
         AgentTask {
             name: "ja4_from_extracted_fields",
@@ -144,10 +119,6 @@ fn agent_test_tasks_value() -> String {
                      extensions [0,43,13], signature algorithms [1027,2052], and first ALPN 'h2'. \
                      Compute the base JA4 (TLS-client) fingerprint from those fields (no raw \
                      bytes). Return one row with a single column named ja4.",
-            reference_sql: "SELECT tlsfp.main.ja4_from_parts(772, [4865,4866], [0,43,13], \
-                            [1027,2052], 'h2') AS ja4",
-            unordered: false,
-            ignore_column_names: true,
         },
         AgentTask {
             name: "decode_clienthello_sni",
@@ -156,11 +127,6 @@ fn agent_test_tasks_value() -> String {
                  return just the SNI host name the client requested. Return one row with a single \
                  column named sni."
             ),
-            reference_sql: &format!(
-                "SELECT (tlsfp.main.parse_client_hello(from_hex('{CH}'))).sni AS sni"
-            ),
-            unordered: false,
-            ignore_column_names: true,
         },
     ])
 }
@@ -287,6 +253,7 @@ fn catalog_metadata(name: &str) -> CatalogModel {
         implementation_version: Some(version().to_string()),
         schemas: vec![CatSchema {
             name: "main".to_string(),
+            path: Vec::new(),
             comment: Some(
                 "TLS fingerprint functions: ja3/ja3s/ja4 and their string/raw/from-parts \
                  companions, parse_client_hello, and the is_tls_handshake guard."

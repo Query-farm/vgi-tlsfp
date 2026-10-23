@@ -83,15 +83,13 @@ pub fn keywords_json(keywords: &str) -> String {
 }
 
 /// One analyst task for the `vgi.agent_test_tasks` suite that `vgi-lint simulate`
-/// grades: a `name`, the analyst-visible `prompt`, a deterministic canonical
-/// `reference_sql`, and the two grading opt-outs (`unordered` compares row-sets
-/// ignoring order; `ignore_column_names` compares by value only).
+/// grades: a `name` and the analyst-visible `prompt`. The private graders (the
+/// deterministic canonical `reference_sql` and the `unordered` /
+/// `ignore_column_names` opt-outs) live in `vgi-agent-tests.yaml` at the repo
+/// root, keyed by `name`, so the agent being graded never sees them (VGI416).
 pub struct AgentTask<'a> {
     pub name: &'a str,
     pub prompt: &'a str,
-    pub reference_sql: &'a str,
-    pub unordered: bool,
-    pub ignore_column_names: bool,
 }
 
 /// Build the `vgi.agent_test_tasks` JSON value from a fixed suite of tasks.
@@ -105,13 +103,9 @@ pub fn agent_test_tasks_json(tasks: &[AgentTask]) -> String {
         .iter()
         .map(|t| {
             format!(
-                "{{\"name\":\"{}\",\"prompt\":\"{}\",\"reference_sql\":\"{}\",\
-                 \"unordered\":{},\"ignore_column_names\":{}}}",
+                "{{\"name\":\"{}\",\"prompt\":\"{}\"}}",
                 esc(t.name),
-                esc(t.prompt),
-                esc(t.reference_sql),
-                t.unordered,
-                t.ignore_column_names,
+                esc(t.prompt)
             )
         })
         .collect();

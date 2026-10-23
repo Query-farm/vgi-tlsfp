@@ -43,4 +43,4 @@ vgi-rpc = { workspace = true, features = ["stream-codec"] }
 [dev-dependencies]
 # Used only by the Arrow-boundary tests to independently re-derive a JA3 MD5 from
 # its pre-hash string.
-md-5 = "0.10"
+md-5 = "0.11"
