@@ -2082,7 +2082,7 @@ dependencies = [
 
 [[package]]
 name = "tlsfp-core"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "md-5",
  "proptest",
@@ -2091,7 +2091,7 @@ dependencies = [
 
 [[package]]
 name = "tlsfp-wasm"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "tlsfp-worker",
  "vgi",
@@ -2099,7 +2099,7 @@ dependencies = [
 
 [[package]]
 name = "tlsfp-worker"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "arrow-array",
  "arrow-buffer",
