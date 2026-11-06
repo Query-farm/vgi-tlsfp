@@ -74,7 +74,7 @@ cargo clippy --all-targets -- -D warnings
 cargo fmt --check
 cargo test
 RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --workspace
-uvx --from vgi-lint-check vgi-lint lint "$PWD/target/release/tlsfp-worker" --fail-on info
+uvx --prerelease allow --from 'vgi-lint-check>=2.0.1' vgi-lint lint "$PWD/target/release/tlsfp-worker" --fail-on info
 # haybarn SQL E2E (per transport):
 HAYBARN_UNITTEST=… WORKER_BIN="$PWD/target/release/tlsfp-worker" TRANSPORT=subprocess ci/run-integration.sh
 ```

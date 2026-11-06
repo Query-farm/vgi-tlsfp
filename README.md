@@ -123,7 +123,7 @@ TRANSPORT=subprocess ci/run-integration.sh
 ### Metadata quality (vgi-lint)
 
 ```bash
-uvx --from vgi-lint-check vgi-lint lint "$PWD/target/release/tlsfp-worker" --fail-on info
+uvx --prerelease allow --from 'vgi-lint-check>=2.0.1' vgi-lint lint "$PWD/target/release/tlsfp-worker" --fail-on info
 ```
 
 ## Architecture
