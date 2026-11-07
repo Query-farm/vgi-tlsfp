@@ -28,23 +28,44 @@ than failing the query.
 
 ## Quick start
 
+Every [GitHub release](https://github.com/Query-farm/vgi-tlsfp/releases) ships a prebuilt worker binary. The `vgi` extension downloads the one for your platform, checks its SHA-256 and caches it, so there is nothing to install besides DuckDB:
+
 ```sql
-INSTALL vgi FROM community; LOAD vgi;
-ATTACH 'tlsfp' (TYPE vgi, LOCATION '/path/to/tlsfp-worker');
-SET search_path = 'tlsfp.main';
+INSTALL vgi FROM community;
+LOAD vgi;
 
--- cluster suspect infrastructure by client fingerprint
-SELECT ja3(client_hello) AS ja3, ja4(client_hello) AS ja4, count(*) n
-FROM captured_handshakes GROUP BY 1, 2 ORDER BY n DESC;
+ATTACH 'tlsfp' AS tlsfp (TYPE vgi, LOCATION 'github-auto://Query-farm/vgi-tlsfp@v0.2.0');
 
--- compute from already-parsed fields (no raw bytes needed)
-SELECT ja3_from_parts(771, ciphers, extensions, curves, point_formats) FROM zeek_ssl;
+-- Cluster a set of captured ClientHellos by their JA3 and JA4 fingerprints, most
+-- frequent first — the headline threat-hunting query.
+SELECT tlsfp.main.ja3(client_hello) AS ja3, tlsfp.main.ja4(client_hello) AS ja4, count(*) AS n FROM (VALUES (from_hex('010000cf03031111111111111111111111111111111111111111111111111111111111111111110000200a0a002f0035009c009d130113021303c013c014c02bc02cc02fc030cca8cca90100008600000010000e00000b6578616d706c652e636f6d000500050100000000000a000a0008001d001700180019000b00020100000d0012001004030804040105030805050108060601001000050003026832001200000015000000170000001b00001a1a000000230000002b0007060a0a03040303002d000201000033000044690000ff01000100')), (from_hex('010000cf03031111111111111111111111111111111111111111111111111111111111111111110000200a0a002f0035009c009d130113021303c013c014c02bc02cc02fc030cca8cca90100008600000010000e00000b6578616d706c652e636f6d000500050100000000000a000a0008001d001700180019000b00020100000d0012001004030804040105030805050108060601001000050003026832001200000015000000170000001b00001a1a000000230000002b0007060a0a03040303002d000201000033000044690000ff01000100'))) AS t(client_hello) GROUP BY 1, 2 ORDER BY n DESC;
+
+-- Compute the JA3S server fingerprint of a captured ServerHello.
+SELECT tlsfp.main.ja3s(from_hex('020000360303222222222222222222222222222222222222222222222222222222222222222200c02f00000eff01000100001000050003026832')) AS ja3s;
 ```
 
 The `client_hello`/`server_hello` inputs are the raw TLS handshake record (e.g.
 from Zeek's `ssl.log` raw field or a pcap reader) — either a full TLS record
 (starting `0x16…`) or the bare handshake message (`0x01…` / `0x02…`). This is a
-*fingerprint* primitive, not a packet-capture tool.
+*fingerprint* primitive, not a packet-capture tool. The [Examples](#examples)
+below call the functions unqualified; run `SET search_path = 'tlsfp.main';`
+after the `ATTACH` to do the same.
+
+Prebuilt binaries cover macOS (Apple silicon), Linux (x86-64 and arm64). `github-auto://` needs an explicit release tag; change `@v0.2.0` to move to a newer release.
+
+### Other ways to run it
+
+- **Docker** (the image bundles the worker; needs a container runtime):
+
+  ```sql
+  ATTACH 'tlsfp' AS tlsfp (TYPE vgi, LOCATION 'docker://ghcr.io/query-farm/vgi-tlsfp:0.2.0');
+  ```
+
+- **Manual download.** Download the archive for your platform from the [releases page](https://github.com/Query-farm/vgi-tlsfp/releases), verify it against its `.sha256` file (a cosign `.cosign.bundle` is published alongside), unpack it, and set `LOCATION` to the path of the extracted worker executable.
+
+### Build from source
+
+To build the worker yourself, see [Build & test](#build--test).
 
 ## Function reference (`tlsfp.main`)
 
