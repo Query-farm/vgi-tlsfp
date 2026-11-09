@@ -188,9 +188,11 @@ fn catalog_metadata(name: &str) -> CatalogModel {
                 .to_string(),
         ),
         tags: vec![
+            ("vgi.title".to_string(), "TLS Fingerprinting".to_string()),
             (
-                "vgi.title".to_string(),
-                "TLS Fingerprinting (JA3 / JA3S / JA4)".to_string(),
+                "vgi.subtitle".to_string(),
+                "Compute JA3, JA3S, and JA4 TLS fingerprints from raw handshake bytes or extracted fields."
+                    .to_string(),
             ),
             (
                 "vgi.keywords".to_string(),
@@ -262,7 +264,7 @@ fn catalog_metadata(name: &str) -> CatalogModel {
             tags: vec![
                 (
                     "vgi.title".to_string(),
-                    "TLS Fingerprinting — main".to_string(),
+                    "TLS Fingerprints".to_string(),
                 ),
                 (
                     "vgi.keywords".to_string(),
