@@ -34,7 +34,7 @@ Every [GitHub release](https://github.com/Query-farm/vgi-tlsfp/releases) ships a
 INSTALL vgi FROM community;
 LOAD vgi;
 
-ATTACH 'tlsfp' AS tlsfp (TYPE vgi, LOCATION 'github-auto://Query-farm/vgi-tlsfp@v0.2.0');
+ATTACH 'tlsfp' AS tlsfp (TYPE vgi, LOCATION 'github-auto://Query-farm/vgi-tlsfp@v0.3.0');
 
 -- Cluster a set of captured ClientHellos by their JA3 and JA4 fingerprints, most
 -- frequent first — the headline threat-hunting query.
@@ -51,14 +51,14 @@ from Zeek's `ssl.log` raw field or a pcap reader) — either a full TLS record
 below call the functions unqualified; run `SET search_path = 'tlsfp.main';`
 after the `ATTACH` to do the same.
 
-Prebuilt binaries cover macOS (Apple silicon), Linux (x86-64 and arm64). `github-auto://` needs an explicit release tag; change `@v0.2.0` to move to a newer release.
+Prebuilt binaries cover macOS (Apple silicon), Linux (x86-64 and arm64). `github-auto://` needs an explicit release tag; change `@v0.3.0` to move to a newer release.
 
 ### Other ways to run it
 
 - **Docker** (the image bundles the worker; needs a container runtime):
 
   ```sql
-  ATTACH 'tlsfp' AS tlsfp (TYPE vgi, LOCATION 'docker://ghcr.io/query-farm/vgi-tlsfp:0.2.0');
+  ATTACH 'tlsfp' AS tlsfp (TYPE vgi, LOCATION 'docker://ghcr.io/query-farm/vgi-tlsfp:0.3.0');
   ```
 
 - **Manual download.** Download the archive for your platform from the [releases page](https://github.com/Query-farm/vgi-tlsfp/releases), verify it against its `.sha256` file (a cosign `.cosign.bundle` is published alongside), unpack it, and set `LOCATION` to the path of the extracted worker executable.
