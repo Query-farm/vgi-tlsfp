@@ -24,19 +24,27 @@ impl ScalarFunction for Ja3s {
     }
 
     fn metadata(&self) -> FunctionMetadata {
+        let (composed_desc, composed_sql) = crate::meta::ja3_ja3s_pair_example();
         FunctionMetadata {
             description: "Compute the JA3S fingerprint (MD5, 32 hex) of a raw TLS ServerHello; \
                           NULL if the bytes do not parse"
                 .into(),
             return_type: Some(DataType::Utf8),
-            examples: vec![FunctionExample {
-                sql: format!(
-                    "SELECT tlsfp.main.ja3s(from_hex('{}'));",
-                    crate::meta::SAMPLE_SERVER_HELLO_HEX
-                ),
-                description: "Fingerprint the server side of a handshake with JA3S.".into(),
-                expected_output: None,
-            }],
+            examples: vec![
+                FunctionExample {
+                    sql: format!(
+                        "SELECT tlsfp.main.ja3s(from_hex('{}'));",
+                        crate::meta::SAMPLE_SERVER_HELLO_HEX
+                    ),
+                    description: "Fingerprint the server side of a handshake with JA3S.".into(),
+                    expected_output: None,
+                },
+                FunctionExample {
+                    sql: composed_sql.clone(),
+                    description: composed_desc.into(),
+                    expected_output: None,
+                },
+            ],
             tags: {
                 let mut tags = crate::meta::object_tags(
                     "JA3S Server Fingerprint",
@@ -54,13 +62,16 @@ impl ScalarFunction for Ja3s {
                 );
                 tags.push((
                     "vgi.example_queries".to_string(),
-                    crate::meta::example_queries_json(&[(
-                        "Fingerprint the server side of a handshake with JA3S.",
-                        &format!(
-                            "SELECT tlsfp.main.ja3s(from_hex('{}'));",
-                            crate::meta::SAMPLE_SERVER_HELLO_HEX
+                    crate::meta::example_queries_json(&[
+                        (
+                            "Fingerprint the server side of a handshake with JA3S.",
+                            &format!(
+                                "SELECT tlsfp.main.ja3s(from_hex('{}'));",
+                                crate::meta::SAMPLE_SERVER_HELLO_HEX
+                            ),
                         ),
-                    )]),
+                        (composed_desc, &composed_sql),
+                    ]),
                 ));
                 tags
             },

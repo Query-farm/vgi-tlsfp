@@ -119,20 +119,28 @@ impl ScalarFunction for Ja3String {
     }
 
     fn metadata(&self) -> FunctionMetadata {
+        let (composed_desc, composed_sql) = crate::meta::ja3_audit_example();
         FunctionMetadata {
             description: "Return the pre-hash JA3 string \
                           (version,ciphers,extensions,curves,point_formats) of a raw ClientHello; \
                           NULL if it does not parse"
                 .into(),
             return_type: Some(DataType::Utf8),
-            examples: vec![FunctionExample {
-                sql: format!(
-                    "SELECT tlsfp.main.ja3_string(from_hex('{}'));",
-                    crate::meta::SAMPLE_CLIENT_HELLO_HEX
-                ),
-                description: "Inspect the un-hashed JA3 string for audit/debugging.".into(),
-                expected_output: None,
-            }],
+            examples: vec![
+                FunctionExample {
+                    sql: format!(
+                        "SELECT tlsfp.main.ja3_string(from_hex('{}'));",
+                        crate::meta::SAMPLE_CLIENT_HELLO_HEX
+                    ),
+                    description: "Inspect the un-hashed JA3 string for audit/debugging.".into(),
+                    expected_output: None,
+                },
+                FunctionExample {
+                    sql: composed_sql.clone(),
+                    description: composed_desc.into(),
+                    expected_output: None,
+                },
+            ],
             tags: {
                 let mut tags = crate::meta::object_tags(
                     "JA3 String (pre-hash)",
@@ -148,13 +156,16 @@ impl ScalarFunction for Ja3String {
                 );
                 tags.push((
                     "vgi.example_queries".to_string(),
-                    crate::meta::example_queries_json(&[(
-                        "Inspect the un-hashed JA3 string for audit/debugging.",
-                        &format!(
-                            "SELECT tlsfp.main.ja3_string(from_hex('{}'));",
-                            crate::meta::SAMPLE_CLIENT_HELLO_HEX
+                    crate::meta::example_queries_json(&[
+                        (
+                            "Inspect the un-hashed JA3 string for audit/debugging.",
+                            &format!(
+                                "SELECT tlsfp.main.ja3_string(from_hex('{}'));",
+                                crate::meta::SAMPLE_CLIENT_HELLO_HEX
+                            ),
                         ),
-                    )]),
+                        (composed_desc, &composed_sql),
+                    ]),
                 ));
                 tags
             },

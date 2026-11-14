@@ -39,19 +39,27 @@ impl ScalarFunction for Ja4 {
     }
 
     fn metadata(&self) -> FunctionMetadata {
+        let (composed_desc, composed_sql) = crate::meta::ja4_sni_pivot_example();
         FunctionMetadata {
             description: "Compute the JA4 (base TLS-client) fingerprint of a raw TLS ClientHello; \
                           NULL if the bytes do not parse"
                 .into(),
             return_type: Some(DataType::Utf8),
-            examples: vec![FunctionExample {
-                sql: format!(
-                    "SELECT tlsfp.main.ja4(from_hex('{}'));",
-                    crate::meta::SAMPLE_CLIENT_HELLO_HEX
-                ),
-                description: "Compute the JA4 fingerprint of a captured ClientHello.".into(),
-                expected_output: None,
-            }],
+            examples: vec![
+                FunctionExample {
+                    sql: format!(
+                        "SELECT tlsfp.main.ja4(from_hex('{}'));",
+                        crate::meta::SAMPLE_CLIENT_HELLO_HEX
+                    ),
+                    description: "Compute the JA4 fingerprint of a captured ClientHello.".into(),
+                    expected_output: None,
+                },
+                FunctionExample {
+                    sql: composed_sql.clone(),
+                    description: composed_desc.into(),
+                    expected_output: None,
+                },
+            ],
             tags: {
                 let mut tags = crate::meta::object_tags(
                     "JA4 Client Fingerprint",
@@ -70,13 +78,16 @@ impl ScalarFunction for Ja4 {
                 );
                 tags.push((
                     "vgi.example_queries".to_string(),
-                    crate::meta::example_queries_json(&[(
-                        "Compute the JA4 fingerprint of a captured ClientHello.",
-                        &format!(
-                            "SELECT tlsfp.main.ja4(from_hex('{}'));",
-                            crate::meta::SAMPLE_CLIENT_HELLO_HEX
+                    crate::meta::example_queries_json(&[
+                        (
+                            "Compute the JA4 fingerprint of a captured ClientHello.",
+                            &format!(
+                                "SELECT tlsfp.main.ja4(from_hex('{}'));",
+                                crate::meta::SAMPLE_CLIENT_HELLO_HEX
+                            ),
                         ),
-                    )]),
+                        (composed_desc, &composed_sql),
+                    ]),
                 ));
                 tags
             },

@@ -54,6 +54,7 @@ fn agent_test_tasks_value() -> String {
     use crate::meta::AgentTask;
     use crate::meta::SAMPLE_CLIENT_HELLO_HEX as CH;
     use crate::meta::SAMPLE_SERVER_HELLO_HEX as SH;
+    let org = crate::meta::sample_client_hello_org_hex();
     crate::meta::agent_test_tasks_json(&[
         AgentTask {
             name: "ja4_of_clienthello",
@@ -121,6 +122,16 @@ fn agent_test_tasks_value() -> String {
                      bytes). Return one row with a single column named ja4.",
         },
         AgentTask {
+            name: "sni_and_ja4_per_clienthello",
+            prompt: &format!(
+                "I captured two TLS ClientHellos; their raw bytes in hex are '{CH}' and \
+                 '{org}'. For each one, give the SNI host name it requested and its base JA4 \
+                 (TLS-client) fingerprint, so I can see whether both came from the same client \
+                 stack. Return two rows ordered by sni, with exactly two columns in this order: \
+                 sni then ja4."
+            ),
+        },
+        AgentTask {
             name: "decode_clienthello_sni",
             prompt: &format!(
                 "I captured one TLS ClientHello; its raw bytes in hex are '{CH}'. Decode it and \
@@ -139,6 +150,9 @@ fn agent_test_tasks_value() -> String {
 fn schema_example_queries_value() -> String {
     use crate::meta::SAMPLE_CLIENT_HELLO_HEX as CH;
     use crate::meta::SAMPLE_SERVER_HELLO_HEX as SH;
+    let (pivot_desc, pivot_sql) = crate::meta::ja4_sni_pivot_example();
+    let (pair_desc, pair_sql) = crate::meta::ja3_ja3s_pair_example();
+    let (audit_desc, audit_sql) = crate::meta::ja3_audit_example();
     crate::meta::example_queries_json(&[
         (
             "Cluster a set of captured ClientHellos by their JA3 and JA4 fingerprints, most \
@@ -174,6 +188,9 @@ fn schema_example_queries_value() -> String {
                  (from_hex('00'))) AS t(pkt) WHERE tlsfp.main.is_tls_handshake(pkt)"
             ),
         ),
+        (pivot_desc, &pivot_sql),
+        (pair_desc, &pair_sql),
+        (audit_desc, &audit_sql),
     ])
 }
 
