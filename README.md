@@ -173,3 +173,7 @@ Two crates:
 
 MIT — see [LICENSE](LICENSE). Copyright 2026 Query Farm LLC. Part of the
 [Query.Farm](https://query.farm) VGI ecosystem of DuckDB workers.
+
+## Notebooks
+
+[Executed SQL walkthrough](notebooks/README.md): compare JA3 and base JA4 groups, retain parsing coverage, and correlate synthetic certificate evidence with VGI X.509.
