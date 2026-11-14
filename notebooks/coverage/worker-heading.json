@@ -1,0 +1,26 @@
+{
+  "repository": "Query-farm/vgi-tlsfp",
+  "title": "TLS Fingerprinting",
+  "subtitle": "Compute JA3, JA3S, and JA4 TLS fingerprints from raw handshake bytes or extracted fields.",
+  "evidence_sha256": "712431d817959383ae29eee18863fc21deacfd77bf947a6a362a25295a024c8c",
+  "provenance": "Actual catalog tags from the released runtime used by the notebook",
+  "worker_release": "v0.4.0",
+  "runtime_export": {
+    "attach": "ATTACH 'tlsfp' (TYPE vgi,LOCATION 'github-auto://Query-farm/vgi-tlsfp@v0.4.0');",
+    "query": "SELECT database_name, comment, map_extract_value(tags,'vgi.title') AS title, map_extract_value(tags,'vgi.subtitle') AS subtitle FROM duckdb_databases() WHERE map_extract_value(tags,'vgi.title') IS NOT NULL",
+    "columns": [
+      "database_name",
+      "comment",
+      "title",
+      "subtitle"
+    ],
+    "rows": [
+      [
+        "tlsfp",
+        "TLS client/server fingerprinting (JA3, JA3S, JA4 TLS-client) as pure SQL scalars over raw handshake bytes.",
+        "TLS Fingerprinting",
+        "Compute JA3, JA3S, and JA4 TLS fingerprints from raw handshake bytes or extracted fields."
+      ]
+    ]
+  }
+}

@@ -22,9 +22,9 @@ uv run --locked vgi-notebooks 01_fingerprint_groups_are_not_identities.ipynb --p
 uv run --locked vgi-notebooks 02_reconstruct_fingerprints_from_fields.ipynb --parameters '{"JA4_USES_LEGACY_VERSION":true}' --output-dir artifacts/legacy-version
 ```
 
-The [shared standard](https://github.com/Query-farm/vgi-example-notebooks/blob/v0.3.6/docs/standard.md),
+The [shared standard](https://github.com/Query-farm/vgi-example-notebooks/blob/v0.3.8/docs/standard.md),
 runner, branding, SVG presentation and Colab compatibility live in
-[vgi-example-notebooks v0.3.6](https://github.com/Query-farm/vgi-example-notebooks).
+[vgi-example-notebooks v0.3.8](https://github.com/Query-farm/vgi-example-notebooks).
 `tlsfp_example.py` contains only this example's charts and interpretations; analytical
 calls stay in visible SQL. Saved SVG outputs have matching assets under `charts/`
 for GitHub rendering. Keep those assets with the notebooks.
