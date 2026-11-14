@@ -1,0 +1,7 @@
+Shared notebook tools v0.3.6; complete default runs in fresh kernels.
+Updated vgi-example-notebooks v0.3.0 (8adc6895) -> v0.3.6 (31eb1be7)
+Running 01_fingerprint_groups_are_not_identities.ipynb ...
+OK: 15 code cells, 2 charts, 3.3s
+Running 02_reconstruct_fingerprints_from_fields.ipynb ...
+OK: 9 code cells, 1 charts, 2.0s
+All saved output cells are byte-identical to the previous publication. Analytical code is unchanged.
