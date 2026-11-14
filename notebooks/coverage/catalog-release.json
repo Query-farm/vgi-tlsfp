@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "repository": "Query-farm/vgi-tlsfp",
+  "captured_at": "2026-11-14T17:22:45.697002+00:00",
+  "default_schema": "main",
+  "scope": "all_public_functions_and_tables",
+  "complete": true,
+  "objects": [
+    {
+      "schema": "main",
+      "name": "is_tls_handshake",
+      "kind": "function",
+      "signatures": [
+        "is_tls_handshake(BLOB) -> BOOLEAN"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "ja3",
+      "kind": "function",
+      "signatures": [
+        "ja3(BLOB) -> VARCHAR"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "ja3_from_parts",
+      "kind": "function",
+      "signatures": [
+        "ja3_from_parts(INTEGER, INTEGER[], INTEGER[], INTEGER[], INTEGER[]) -> VARCHAR"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "ja3_string",
+      "kind": "function",
+      "signatures": [
+        "ja3_string(BLOB) -> VARCHAR"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "ja3s",
+      "kind": "function",
+      "signatures": [
+        "ja3s(BLOB) -> VARCHAR"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "ja3s_from_parts",
+      "kind": "function",
+      "signatures": [
+        "ja3s_from_parts(INTEGER, INTEGER, INTEGER[]) -> VARCHAR"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "ja4",
+      "kind": "function",
+      "signatures": [
+        "ja4(BLOB) -> VARCHAR"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "ja4_from_parts",
+      "kind": "function",
+      "signatures": [
+        "ja4_from_parts(INTEGER, INTEGER[], INTEGER[], INTEGER[], VARCHAR) -> VARCHAR"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "ja4_raw",
+      "kind": "function",
+      "signatures": [
+        "ja4_raw(BLOB) -> VARCHAR"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "parse_client_hello",
+      "kind": "function",
+      "signatures": [
+        "parse_client_hello(BLOB) -> STRUCT(\"version\" INTEGER, sni VARCHAR, ciphers INTEGER[], \"extensions\" INTEGER[], curves INTEGER[], alpn VARCHAR[])"
+      ],
+      "authentication": "none",
+      "access": "read"
+    }
+  ],
+  "revision": "v0.4.0",
+  "source_commit": "5c885ead146b3eb9922e15b4d68a4f17783800ed",
+  "launch": "github-auto://Query-farm/vgi-tlsfp@v0.4.0",
+  "evidence": [
+    {
+      "path": "coverage/functions.json",
+      "sha256": "10ad15d2860c75c25491edc21eceaadaf6c85234e4effc0e3fd31f5e212f3fe8",
+      "description": "Complete released worker duckdb_functions export"
+    },
+    {
+      "path": "coverage/tables.json",
+      "sha256": "e44ad733547acd964fc262a4882bb6ff76f2a1590439686246bbcd8b43eb60ba",
+      "description": "Complete released worker duckdb_tables export, empty"
+    },
+    {
+      "path": "coverage/arguments.json",
+      "sha256": "0a03bb446f68f47c47b8ec93f4a1b808db6a10fea24d6eac7b5191a4b5bd521c",
+      "description": "Released worker argument descriptions"
+    }
+  ]
+}

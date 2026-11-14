@@ -1,0 +1,405 @@
+{
+  "schema_version": 1,
+  "catalogs": {
+    "released": {
+      "path": "coverage/catalog-release.json",
+      "sha256": "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4",
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root",
+        "reviewed_at": "2026-11-14T17:34:53.999237+00:00",
+        "catalog_sha256": "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4",
+        "notes": "Real v0.4.0 github-auto runtime exports contain ten named scalars and no tables. Registration was reviewed without exclusions. All functions are local read-only computation without authentication."
+      }
+    },
+    "current": {
+      "path": "coverage/catalog-current.json",
+      "sha256": "8767d611a58fc0f947f4a279c2977e0d26a213267a95a477d7ab1ce0b05ed4cc",
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root",
+        "reviewed_at": "2026-11-14T17:34:53.999237+00:00",
+        "catalog_sha256": "8767d611a58fc0f947f4a279c2977e0d26a213267a95a477d7ab1ce0b05ed4cc",
+        "notes": "Reviewed complete public-main scalar registration and catalog at 3c7db0c4d60d30d411f71b91428892365c3881cb: exactly the same ten names/signatures, no tables. Complete worker-source diff from v0.4.0 changes metadata examples, fixture constants and their tests; computational interfaces and implementation are unchanged. Current source was not executed by these notebooks; compatibility review applies the released examples to the unchanged current interface."
+      }
+    }
+  },
+  "notebooks": [
+    {
+      "path": "01_fingerprint_groups_are_not_identities.ipynb",
+      "sha256": "c801c93dbcd2054b32ce6588ccd4779bc52fb22fb4494b1bf6afc802f5461de7",
+      "execution": {
+        "path": "coverage/run-01.json",
+        "sha256": "f3f19c8eb26a072fb177121014eec79bd07dc61b5b617d3f411a134f38277625"
+      }
+    },
+    {
+      "path": "02_reconstruct_fingerprints_from_fields.ipynb",
+      "sha256": "27fc35f09bfe3314560430070db70a9d2c0d8609b31a8724207f8d9157d13817",
+      "execution": {
+        "path": "coverage/run-02.json",
+        "sha256": "b04f59adc1ca33e69c794327dc674f094e3ccb400bf2aa9cd0a4505f3c424c53"
+      }
+    }
+  ],
+  "examples": [
+    {
+      "object": {
+        "schema": "main",
+        "name": "is_tls_handshake"
+      },
+      "notebook": "01_fingerprint_groups_are_not_identities.ipynb",
+      "sql": [
+        {
+          "cell": "2607b40b",
+          "reference": "tlsfp.main.is_tls_handshake"
+        }
+      ],
+      "narrative_cells": [
+        "d0a3b40a"
+      ],
+      "result_cells": [
+        "2607b40b",
+        "d043494e"
+      ],
+      "interpretation_cells": [
+        "d043494e"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root",
+        "reviewed_at": "2026-11-14T17:34:53.999237+00:00",
+        "notebook_sha256": "c801c93dbcd2054b32ce6588ccd4779bc52fb22fb4494b1bf6afc802f5461de7",
+        "catalog_sha256": [
+          "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4",
+          "8767d611a58fc0f947f4a279c2977e0d26a213267a95a477d7ab1ce0b05ed4cc"
+        ],
+        "purpose": "Preserve the complete input population while distinguishing recognizable TLS headers from parsed ClientHellos.",
+        "finding": "Twelve input rows survive; the header-only input and ServerHello pass the header guard but produce no client parse. A header guard alone is insufficient."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "parse_client_hello"
+      },
+      "notebook": "01_fingerprint_groups_are_not_identities.ipynb",
+      "sql": [
+        {
+          "cell": "2607b40b",
+          "reference": "tlsfp.main.parse_client_hello"
+        }
+      ],
+      "narrative_cells": [
+        "d0a3b40a",
+        "fd5eefdc"
+      ],
+      "result_cells": [
+        "2607b40b",
+        "388d7f24"
+      ],
+      "interpretation_cells": [
+        "d043494e",
+        "9cb8d701"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root",
+        "reviewed_at": "2026-11-14T17:34:53.999237+00:00",
+        "notebook_sha256": "c801c93dbcd2054b32ce6588ccd4779bc52fb22fb4494b1bf6afc802f5461de7",
+        "catalog_sha256": [
+          "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4",
+          "8767d611a58fc0f947f4a279c2977e0d26a213267a95a477d7ab1ce0b05ed4cc"
+        ],
+        "purpose": "Use parsed fields to separate valid clients and compare supplied server names and wire-order lists.",
+        "finding": "Eight records parse as clients; incomplete, wrong-role, non-handshake and missing inputs remain separately visible. Distinct server names can share a fingerprint."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "ja3"
+      },
+      "notebook": "01_fingerprint_groups_are_not_identities.ipynb",
+      "sql": [
+        {
+          "cell": "2607b40b",
+          "reference": "tlsfp.main.ja3"
+        }
+      ],
+      "narrative_cells": [
+        "fd5eefdc",
+        "c8e29896"
+      ],
+      "result_cells": [
+        "2607b40b",
+        "9cb8d701"
+      ],
+      "interpretation_cells": [
+        "c90dccee",
+        "92a05fa4"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root",
+        "reviewed_at": "2026-11-14T17:34:53.999237+00:00",
+        "notebook_sha256": "c801c93dbcd2054b32ce6588ccd4779bc52fb22fb4494b1bf6afc802f5461de7",
+        "catalog_sha256": [
+          "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4",
+          "8767d611a58fc0f947f4a279c2977e0d26a213267a95a477d7ab1ce0b05ed4cc"
+        ],
+        "purpose": "Compare cipher-order-sensitive grouping with base JA4 while retaining byte and certificate diversity.",
+        "finding": "The cipher reversal changes JA3 but not base JA4; record framing and GREASE variants preserve normalized fingerprints. The JA3 experiment forms two groups rather than one."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "ja3_string"
+      },
+      "notebook": "01_fingerprint_groups_are_not_identities.ipynb",
+      "sql": [
+        {
+          "cell": "2607b40b",
+          "reference": "tlsfp.main.ja3_string"
+        }
+      ],
+      "narrative_cells": [
+        "fd5eefdc"
+      ],
+      "result_cells": [
+        "388d7f24"
+      ],
+      "interpretation_cells": [
+        "fd5eefdc",
+        "92a05fa4"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root",
+        "reviewed_at": "2026-11-14T17:34:53.999237+00:00",
+        "notebook_sha256": "c801c93dbcd2054b32ce6588ccd4779bc52fb22fb4494b1bf6afc802f5461de7",
+        "catalog_sha256": [
+          "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4",
+          "8767d611a58fc0f947f4a279c2977e0d26a213267a95a477d7ab1ce0b05ed4cc"
+        ],
+        "purpose": "Inspect the pre-hash representation to explain which decoded fields JA3 normalizes.",
+        "finding": "The output exposes GREASE-filtered ordered fields; SQL checks verify its MD5 equals JA3 for all parsed clients. It describes selected handshake fields, not an identity."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "ja4"
+      },
+      "notebook": "01_fingerprint_groups_are_not_identities.ipynb",
+      "sql": [
+        {
+          "cell": "2607b40b",
+          "reference": "tlsfp.main.ja4"
+        }
+      ],
+      "narrative_cells": [
+        "fd5eefdc",
+        "c8e29896"
+      ],
+      "result_cells": [
+        "2607b40b",
+        "9cb8d701"
+      ],
+      "interpretation_cells": [
+        "9cb8d701"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root",
+        "reviewed_at": "2026-11-14T17:34:53.999237+00:00",
+        "notebook_sha256": "c801c93dbcd2054b32ce6588ccd4779bc52fb22fb4494b1bf6afc802f5461de7",
+        "catalog_sha256": [
+          "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4",
+          "8767d611a58fc0f947f4a279c2977e0d26a213267a95a477d7ab1ce0b05ed4cc"
+        ],
+        "purpose": "Compare normalized grouping against record counts, raw-byte diversity and authored certificate associations.",
+        "finding": "All eight parsed client records form one base-JA4 group despite multiple bytes, names and two certificate fingerprints. One group does not imply one client."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "ja4_raw"
+      },
+      "notebook": "01_fingerprint_groups_are_not_identities.ipynb",
+      "sql": [
+        {
+          "cell": "2607b40b",
+          "reference": "tlsfp.main.ja4_raw"
+        }
+      ],
+      "narrative_cells": [
+        "fd5eefdc"
+      ],
+      "result_cells": [
+        "388d7f24"
+      ],
+      "interpretation_cells": [
+        "fd5eefdc",
+        "9cb8d701"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root",
+        "reviewed_at": "2026-11-14T17:34:53.999237+00:00",
+        "notebook_sha256": "c801c93dbcd2054b32ce6588ccd4779bc52fb22fb4494b1bf6afc802f5461de7",
+        "catalog_sha256": [
+          "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4",
+          "8767d611a58fc0f947f4a279c2977e0d26a213267a95a477d7ab1ce0b05ed4cc"
+        ],
+        "purpose": "Show the raw normalized JA4 representation alongside wire-order lists to explain the grouping result.",
+        "finding": "The raw representation retains the effective TLS capability and normalized field lists; cipher-order variants stay in one group. No negotiated TLS version is inferred."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "ja3s"
+      },
+      "notebook": "01_fingerprint_groups_are_not_identities.ipynb",
+      "sql": [
+        {
+          "cell": "2607b40b",
+          "reference": "tlsfp.main.ja3s"
+        }
+      ],
+      "narrative_cells": [
+        "d0a3b40a"
+      ],
+      "result_cells": [
+        "2607b40b"
+      ],
+      "interpretation_cells": [
+        "d043494e",
+        "92a05fa4"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root",
+        "reviewed_at": "2026-11-14T17:34:53.999237+00:00",
+        "notebook_sha256": "c801c93dbcd2054b32ce6588ccd4779bc52fb22fb4494b1bf6afc802f5461de7",
+        "catalog_sha256": [
+          "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4",
+          "8767d611a58fc0f947f4a279c2977e0d26a213267a95a477d7ab1ce0b05ed4cc"
+        ],
+        "purpose": "Keep server-side fingerprinting distinct from client parsing and grouping.",
+        "finding": "The ServerHello has a JA3S value while client parse, JA3 and JA4 remain NULL. The twelve-row audit retains this wrong-role-for-client record."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "ja3_from_parts"
+      },
+      "notebook": "02_reconstruct_fingerprints_from_fields.ipynb",
+      "sql": [
+        {
+          "cell": "reconstruct",
+          "reference": "tlsfp.main.ja3_from_parts"
+        }
+      ],
+      "narrative_cells": [
+        "input-story",
+        "reconstruction-story"
+      ],
+      "result_cells": [
+        "agreement-chart"
+      ],
+      "interpretation_cells": [
+        "agreement-chart",
+        "experiment"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root",
+        "reviewed_at": "2026-11-14T17:34:53.999237+00:00",
+        "notebook_sha256": "27fc35f09bfe3314560430070db70a9d2c0d8609b31a8724207f8d9157d13817",
+        "catalog_sha256": [
+          "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4",
+          "8767d611a58fc0f947f4a279c2977e0d26a213267a95a477d7ab1ce0b05ed4cc"
+        ],
+        "purpose": "Check whether known ClientHello fields reproduce the byte-based JA3 using the correct legacy-version contract.",
+        "finding": "Known builder fields reproduce the byte JA3 exactly. Changing only the JA4 version mapping leaves this result fixed; unrecorded parser fields must not be guessed."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "ja4_from_parts"
+      },
+      "notebook": "02_reconstruct_fingerprints_from_fields.ipynb",
+      "sql": [
+        {
+          "cell": "reconstruct",
+          "reference": "tlsfp.main.ja4_from_parts"
+        }
+      ],
+      "narrative_cells": [
+        "input-story",
+        "reconstruction-story"
+      ],
+      "result_cells": [
+        "agreement-chart"
+      ],
+      "interpretation_cells": [
+        "agreement-chart",
+        "experiment"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root",
+        "reviewed_at": "2026-11-14T17:34:53.999237+00:00",
+        "notebook_sha256": "27fc35f09bfe3314560430070db70a9d2c0d8609b31a8724207f8d9157d13817",
+        "catalog_sha256": [
+          "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4",
+          "8767d611a58fc0f947f4a279c2977e0d26a213267a95a477d7ab1ce0b05ed4cc"
+        ],
+        "purpose": "Demonstrate the effective-version, signature-algorithm and ALPN inputs needed to reproduce a byte-based base JA4.",
+        "finding": "Default fields reproduce byte JA4. Supplying legacy version instead changes only JA4 in the experiment; the worker decoder does not expose all of these reconstruction inputs."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "ja3s_from_parts"
+      },
+      "notebook": "02_reconstruct_fingerprints_from_fields.ipynb",
+      "sql": [
+        {
+          "cell": "reconstruct",
+          "reference": "tlsfp.main.ja3s_from_parts"
+        }
+      ],
+      "narrative_cells": [
+        "input-story",
+        "reconstruction-story"
+      ],
+      "result_cells": [
+        "agreement-chart"
+      ],
+      "interpretation_cells": [
+        "agreement-chart",
+        "experiment"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root",
+        "reviewed_at": "2026-11-14T17:34:53.999237+00:00",
+        "notebook_sha256": "27fc35f09bfe3314560430070db70a9d2c0d8609b31a8724207f8d9157d13817",
+        "catalog_sha256": [
+          "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4",
+          "8767d611a58fc0f947f4a279c2977e0d26a213267a95a477d7ab1ce0b05ed4cc"
+        ],
+        "purpose": "Reconstruct the server fingerprint with the selected cipher and server extensions rather than the ClientHello list.",
+        "finding": "Known ServerHello fields reproduce the byte JA3S and remain fixed when the JA4 client-version mapping changes. This is agreement of routes for one authored message."
+      }
+    }
+  ]
+}

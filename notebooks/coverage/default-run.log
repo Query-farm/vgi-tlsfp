@@ -1,0 +1,10 @@
+Using CPython 3.14.4
+Removed virtual environment at: .venv
+Creating virtual environment at: .venv
+Installed 72 packages in 619ms
+Running 01_fingerprint_groups_are_not_identities.ipynb ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+OK: 15 code cells, 2 charts, 27.6s
+Running 02_reconstruct_fingerprints_from_fields.ipynb ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+OK: 9 code cells, 1 charts, 3.7s

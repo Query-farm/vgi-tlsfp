@@ -1,0 +1,722 @@
+{
+  "schema_version": 1,
+  "status": "met",
+  "meets_target": true,
+  "catalogs": {
+    "released": {
+      "catalog_status": "verified",
+      "revision": "v0.4.0",
+      "catalog_sha256": "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4",
+      "collection_reconciled": true,
+      "denominator": 10,
+      "observed_objects": 10,
+      "required": 10,
+      "verified_count": 10,
+      "candidate_count": 0,
+      "fraction": 1.0,
+      "meets_target": true,
+      "exact_runtime_count": 10,
+      "runtime_revisions": [
+        "v0.4.0"
+      ],
+      "covered": [
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "is_tls_handshake"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3_from_parts"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3_string"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3s"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3s_from_parts"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja4"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja4_from_parts"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja4_raw"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "parse_client_hello"
+        }
+      ],
+      "uncovered": [],
+      "objects": [
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "is_tls_handshake",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "is_tls_handshake(BLOB) -> BOOLEAN"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ja3(BLOB) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3_from_parts",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ja3_from_parts(INTEGER, INTEGER[], INTEGER[], INTEGER[], INTEGER[]) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3_string",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ja3_string(BLOB) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3s",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ja3s(BLOB) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3s_from_parts",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ja3s_from_parts(INTEGER, INTEGER, INTEGER[]) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja4",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ja4(BLOB) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja4_from_parts",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ja4_from_parts(INTEGER, INTEGER[], INTEGER[], INTEGER[], VARCHAR) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja4_raw",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ja4_raw(BLOB) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "parse_client_hello",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "parse_client_hello(BLOB) -> STRUCT(\"version\" INTEGER, sni VARCHAR, ciphers INTEGER[], \"extensions\" INTEGER[], curves INTEGER[], alpn VARCHAR[])"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        }
+      ],
+      "issues": []
+    },
+    "current": {
+      "catalog_status": "verified",
+      "revision": "3c7db0c4d60d30d411f71b91428892365c3881cb",
+      "catalog_sha256": "8767d611a58fc0f947f4a279c2977e0d26a213267a95a477d7ab1ce0b05ed4cc",
+      "collection_reconciled": false,
+      "denominator": 10,
+      "observed_objects": 10,
+      "required": 10,
+      "verified_count": 10,
+      "candidate_count": 0,
+      "fraction": 1.0,
+      "meets_target": true,
+      "exact_runtime_count": 0,
+      "runtime_revisions": [
+        "v0.4.0"
+      ],
+      "covered": [
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "is_tls_handshake"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3_from_parts"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3_string"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3s"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3s_from_parts"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja4"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja4_from_parts"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja4_raw"
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "parse_client_hello"
+        }
+      ],
+      "uncovered": [],
+      "objects": [
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "is_tls_handshake",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "is_tls_handshake(BLOB) -> BOOLEAN"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ja3(BLOB) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3_from_parts",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ja3_from_parts(INTEGER, INTEGER[], INTEGER[], INTEGER[], INTEGER[]) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3_string",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ja3_string(BLOB) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3s",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ja3s(BLOB) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja3s_from_parts",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ja3s_from_parts(INTEGER, INTEGER, INTEGER[]) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja4",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ja4(BLOB) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja4_from_parts",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ja4_from_parts(INTEGER, INTEGER[], INTEGER[], INTEGER[], VARCHAR) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "ja4_raw",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "ja4_raw(BLOB) -> VARCHAR"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        },
+        {
+          "schema": [
+            "main"
+          ],
+          "name": "parse_client_hello",
+          "kinds": [
+            "function"
+          ],
+          "signatures": [
+            "parse_client_hello(BLOB) -> STRUCT(\"version\" INTEGER, sni VARCHAR, ciphers INTEGER[], \"extensions\" INTEGER[], curves INTEGER[], alpn VARCHAR[])"
+          ],
+          "access": [
+            "read"
+          ],
+          "authentication": [
+            "none"
+          ]
+        }
+      ],
+      "issues": []
+    }
+  },
+  "interface_drift": {
+    "known": true,
+    "current_only": [],
+    "released_only": [],
+    "changed": []
+  },
+  "notebooks": {
+    "01_fingerprint_groups_are_not_identities.ipynb": {
+      "verified": true,
+      "issues": []
+    },
+    "02_reconstruct_fingerprints_from_fields.ipynb": {
+      "verified": true,
+      "issues": []
+    }
+  },
+  "examples": [
+    {
+      "status": "verified",
+      "issues": [],
+      "verified_catalogs": [
+        "released",
+        "current"
+      ],
+      "object": {
+        "schema": [
+          "main"
+        ],
+        "name": "is_tls_handshake"
+      },
+      "notebook": "01_fingerprint_groups_are_not_identities.ipynb",
+      "runtime_revision": "v0.4.0",
+      "runtime_catalog_sha256": "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4"
+    },
+    {
+      "status": "verified",
+      "issues": [],
+      "verified_catalogs": [
+        "released",
+        "current"
+      ],
+      "object": {
+        "schema": [
+          "main"
+        ],
+        "name": "parse_client_hello"
+      },
+      "notebook": "01_fingerprint_groups_are_not_identities.ipynb",
+      "runtime_revision": "v0.4.0",
+      "runtime_catalog_sha256": "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4"
+    },
+    {
+      "status": "verified",
+      "issues": [],
+      "verified_catalogs": [
+        "released",
+        "current"
+      ],
+      "object": {
+        "schema": [
+          "main"
+        ],
+        "name": "ja3"
+      },
+      "notebook": "01_fingerprint_groups_are_not_identities.ipynb",
+      "runtime_revision": "v0.4.0",
+      "runtime_catalog_sha256": "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4"
+    },
+    {
+      "status": "verified",
+      "issues": [],
+      "verified_catalogs": [
+        "released",
+        "current"
+      ],
+      "object": {
+        "schema": [
+          "main"
+        ],
+        "name": "ja3_string"
+      },
+      "notebook": "01_fingerprint_groups_are_not_identities.ipynb",
+      "runtime_revision": "v0.4.0",
+      "runtime_catalog_sha256": "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4"
+    },
+    {
+      "status": "verified",
+      "issues": [],
+      "verified_catalogs": [
+        "released",
+        "current"
+      ],
+      "object": {
+        "schema": [
+          "main"
+        ],
+        "name": "ja4"
+      },
+      "notebook": "01_fingerprint_groups_are_not_identities.ipynb",
+      "runtime_revision": "v0.4.0",
+      "runtime_catalog_sha256": "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4"
+    },
+    {
+      "status": "verified",
+      "issues": [],
+      "verified_catalogs": [
+        "released",
+        "current"
+      ],
+      "object": {
+        "schema": [
+          "main"
+        ],
+        "name": "ja4_raw"
+      },
+      "notebook": "01_fingerprint_groups_are_not_identities.ipynb",
+      "runtime_revision": "v0.4.0",
+      "runtime_catalog_sha256": "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4"
+    },
+    {
+      "status": "verified",
+      "issues": [],
+      "verified_catalogs": [
+        "released",
+        "current"
+      ],
+      "object": {
+        "schema": [
+          "main"
+        ],
+        "name": "ja3s"
+      },
+      "notebook": "01_fingerprint_groups_are_not_identities.ipynb",
+      "runtime_revision": "v0.4.0",
+      "runtime_catalog_sha256": "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4"
+    },
+    {
+      "status": "verified",
+      "issues": [],
+      "verified_catalogs": [
+        "released",
+        "current"
+      ],
+      "object": {
+        "schema": [
+          "main"
+        ],
+        "name": "ja3_from_parts"
+      },
+      "notebook": "02_reconstruct_fingerprints_from_fields.ipynb",
+      "runtime_revision": "v0.4.0",
+      "runtime_catalog_sha256": "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4"
+    },
+    {
+      "status": "verified",
+      "issues": [],
+      "verified_catalogs": [
+        "released",
+        "current"
+      ],
+      "object": {
+        "schema": [
+          "main"
+        ],
+        "name": "ja4_from_parts"
+      },
+      "notebook": "02_reconstruct_fingerprints_from_fields.ipynb",
+      "runtime_revision": "v0.4.0",
+      "runtime_catalog_sha256": "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4"
+    },
+    {
+      "status": "verified",
+      "issues": [],
+      "verified_catalogs": [
+        "released",
+        "current"
+      ],
+      "object": {
+        "schema": [
+          "main"
+        ],
+        "name": "ja3s_from_parts"
+      },
+      "notebook": "02_reconstruct_fingerprints_from_fields.ipynb",
+      "runtime_revision": "v0.4.0",
+      "runtime_catalog_sha256": "b6e45097756a043049d474c47919e6e991ec871dfadefd3a90ae8d3633e70dd4"
+    }
+  ],
+  "issues": []
+}

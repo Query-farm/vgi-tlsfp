@@ -1,0 +1,26 @@
+[
+  {
+    "notebook": "01_fingerprint_groups_are_not_identities.ipynb",
+    "notebook_code_cells": 15,
+    "svg_charts": 2,
+    "bad_output_cells": [],
+    "preloaded_libraries_preserved": true,
+    "pip_check": "pass",
+    "python": "3.13",
+    "shared_release": "v0.3.0",
+    "hosted_colab": false,
+    "companion_download": "empty directory with base package, no repository checkout"
+  },
+  {
+    "notebook": "02_reconstruct_fingerprints_from_fields.ipynb",
+    "notebook_code_cells": 9,
+    "svg_charts": 1,
+    "bad_output_cells": [],
+    "preloaded_libraries_preserved": true,
+    "pip_check": "pass",
+    "python": "3.13",
+    "shared_release": "v0.3.0",
+    "hosted_colab": false,
+    "companion_download": "empty directory with base package, no repository checkout"
+  }
+]

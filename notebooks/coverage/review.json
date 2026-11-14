@@ -1,0 +1,35 @@
+{
+  "reviewer": "Codex /root",
+  "reviewed_at": "2026-11-14T17:36:12.999049+00:00",
+  "shared_release": "v0.3.0",
+  "default_execution": "Both notebooks completed in fresh kernels; 15 + 9 code cells and 3 SVG charts. See default-run.log and run-01/run-02 receipts.",
+  "experiments": [
+    {
+      "notebook": "01_fingerprint_groups_are_not_identities.ipynb",
+      "parameters": {
+        "USE_JA4": false
+      },
+      "status": "passed",
+      "code_cells": 15,
+      "svg_charts": 2
+    },
+    {
+      "notebook": "02_reconstruct_fingerprints_from_fields.ipynb",
+      "parameters": {
+        "JA4_USES_LEGACY_VERSION": true
+      },
+      "status": "passed",
+      "code_cells": 9,
+      "svg_charts": 1
+    }
+  ],
+  "editorial_review": "Visible analytical SQL, explicit authored fixture provenance, parameter predictions and result interpretations inspected. Charts retain titles, units, complete populations, and source notes. No client identity or certificate trust claims.",
+  "runtime_scope": "Notebooks use github-auto native TLSFP v0.4.0 and, in notebook 01, X.509 v0.4.0. Current TLSFP registration reviewed for interface equivalence; current source was not the notebook runtime.",
+  "checks": {
+    "ruff": "passed",
+    "ruff_format": "passed",
+    "structure": "passed",
+    "saved_warnings_errors_local_paths": "none"
+  },
+  "hosted_colab_tested": false
+}

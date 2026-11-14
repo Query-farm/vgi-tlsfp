@@ -1,0 +1,409 @@
+{
+  "query": "SELECT * FROM duckdb_functions() WHERE database_name='tlsfp'",
+  "columns": [
+    "database_name",
+    "database_oid",
+    "schema_name",
+    "function_name",
+    "alias_of",
+    "function_type",
+    "description",
+    "comment",
+    "tags",
+    "return_type",
+    "parameters",
+    "parameter_types",
+    "varargs",
+    "macro_definition",
+    "has_side_effects",
+    "internal",
+    "extension_name",
+    "function_oid",
+    "examples",
+    "stability",
+    "categories"
+  ],
+  "rows": [
+    [
+      "tlsfp",
+      "22592",
+      "main",
+      "ja3_from_parts",
+      null,
+      "scalar",
+      "Compute the JA3 fingerprint (MD5, 32 hex) from already-extracted ClientHello fields (version, ciphers, extensions, curves, point_formats)",
+      null,
+      {
+        "vgi.category": "JA3 / JA3S",
+        "vgi.doc_llm": "Compute the JA3 fingerprint from the already-extracted ClientHello component fields \u2014 the TLS version, the cipher-suite list, the extension list, the elliptic-curve (supported_groups) list, and the EC point-format list \u2014 for callers who parsed the handshake elsewhere (e.g. Zeek's ssl.log). GREASE values are stripped exactly as in the bytes path, so the two modes always agree.",
+        "vgi.doc_md": "JA3 from parsed fields, e.g. `ja3_from_parts(771, ciphers, extensions, curves, point_formats)`.",
+        "vgi.example_queries": "[{\"description\":\"Compute JA3 from fields already parsed by Zeek/pcap tooling.\",\"sql\":\"SELECT tlsfp.main.ja3_from_parts(771, [47,53,4865], [0,11,10], [29,23], [0]);\"}]",
+        "vgi.keywords": "[\"ja3\",\"from parts\",\"zeek\",\"ssl.log\",\"precomputed fields\",\"ja3 from fields\",\"cipher list\",\"extension list\",\"curves\"]",
+        "vgi.title": "JA3 From Extracted Fields"
+      },
+      "VARCHAR",
+      [
+        "version",
+        "ciphers",
+        "extensions",
+        "curves",
+        "point_formats"
+      ],
+      [
+        "INTEGER",
+        "INTEGER[]",
+        "INTEGER[]",
+        "INTEGER[]",
+        "INTEGER[]"
+      ],
+      null,
+      null,
+      false,
+      true,
+      null,
+      22728,
+      [
+        "SELECT tlsfp.main.ja3_from_parts(771, [47,53,4865], [0,11,10], [29,23], [0]);"
+      ],
+      "CONSISTENT",
+      []
+    ],
+    [
+      "tlsfp",
+      "22592",
+      "main",
+      "ja3",
+      null,
+      "scalar",
+      "Compute the JA3 fingerprint (MD5, 32 hex) of a raw TLS ClientHello; NULL if the bytes do not parse",
+      null,
+      {
+        "vgi.category": "JA3 / JA3S",
+        "vgi.doc_llm": "Compute the JA3 TLS client fingerprint \u2014 the 32-hex MD5 of the ClientHello's version, cipher suites, extensions, elliptic curves, and EC point formats (GREASE stripped). Accepts a full TLS record or a bare handshake message; returns NULL for bytes that do not parse as a ClientHello. Use it to cluster client/bot/C2 infrastructure and to JOIN against threat-intel JA3 lists.",
+        "vgi.doc_md": "JA3 client fingerprint (MD5 hex) of a raw ClientHello, e.g. `ja3(client_hello)`. NULL if unparseable.",
+        "vgi.example_queries": "[{\"description\":\"Compute the JA3 fingerprint of a captured ClientHello.\",\"sql\":\"SELECT tlsfp.main.ja3(from_hex('010000cf03031111111111111111111111111111111111111111111111111111111111111111110000200a0a002f0035009c009d130113021303c013c014c02bc02cc02fc030cca8cca90100008600000010000e00000b6578616d706c652e636f6d000500050100000000000a000a0008001d001700180019000b00020100000d0012001004030804040105030805050108060601001000050003026832001200000015000000170000001b00001a1a000000230000002b0007060a0a03040303002d000201000033000044690000ff01000100'));\"}]",
+        "vgi.executable_examples": "[{\"description\":\"JA3 of a ClientHello (bytes mode).\",\"sql\":\"SELECT tlsfp.main.ja3(from_hex('010000cf03031111111111111111111111111111111111111111111111111111111111111111110000200a0a002f0035009c009d130113021303c013c014c02bc02cc02fc030cca8cca90100008600000010000e00000b6578616d706c652e636f6d000500050100000000000a000a0008001d001700180019000b00020100000d0012001004030804040105030805050108060601001000050003026832001200000015000000170000001b00001a1a000000230000002b0007060a0a03040303002d000201000033000044690000ff01000100')) AS ja3\"},{\"description\":\"JA3 from already-extracted fields (parts mode).\",\"sql\":\"SELECT tlsfp.main.ja3_from_parts(771, [47,53,4865], [0,11,10], [29,23], [0]) AS ja3\"}]",
+        "vgi.keywords": "[\"ja3\",\"tls fingerprint\",\"client fingerprint\",\"clienthello\",\"threat hunting\",\"malware\",\"c2\",\"bot detection\",\"md5\",\"cluster\"]",
+        "vgi.title": "JA3 Client Fingerprint"
+      },
+      "VARCHAR",
+      [
+        "client_hello"
+      ],
+      [
+        "BLOB"
+      ],
+      null,
+      null,
+      false,
+      true,
+      null,
+      22727,
+      [
+        "SELECT tlsfp.main.ja3(from_hex('010000cf03031111111111111111111111111111111111111111111111111111111111111111110000200a0a002f0035009c009d130113021303c013c014c02bc02cc02fc030cca8cca90100008600000010000e00000b6578616d706c652e636f6d000500050100000000000a000a0008001d001700180019000b00020100000d0012001004030804040105030805050108060601001000050003026832001200000015000000170000001b00001a1a000000230000002b0007060a0a03040303002d000201000033000044690000ff01000100'));"
+      ],
+      "CONSISTENT",
+      []
+    ],
+    [
+      "tlsfp",
+      "22592",
+      "main",
+      "is_tls_handshake",
+      null,
+      "scalar",
+      "Return TRUE if the bytes look like a TLS ClientHello/ServerHello handshake (optionally wrapped in a TLS record), else FALSE; NULL input \u2192 NULL",
+      null,
+      {
+        "vgi.category": "Parsing & guards",
+        "vgi.doc_llm": "Return TRUE when the input bytes structurally resemble a TLS ClientHello or ServerHello handshake record (a valid handshake type and a self-consistent length), and FALSE otherwise. Totally safe on arbitrary bytes \u2014 it never errors \u2014 so it is the recommended WHERE-clause guard before calling ja3/ja3s/ja4. NULL input returns NULL.",
+        "vgi.doc_md": "Guard scalar: TRUE iff `bytes` look like a TLS ClientHello/ServerHello, e.g. `WHERE is_tls_handshake(pkt)`.",
+        "vgi.example_queries": "[{\"description\":\"Filter a column to plausible TLS handshakes before fingerprinting.\",\"sql\":\"SELECT tlsfp.main.is_tls_handshake(from_hex('010000cf03031111111111111111111111111111111111111111111111111111111111111111110000200a0a002f0035009c009d130113021303c013c014c02bc02cc02fc030cca8cca90100008600000010000e00000b6578616d706c652e636f6d000500050100000000000a000a0008001d001700180019000b00020100000d0012001004030804040105030805050108060601001000050003026832001200000015000000170000001b00001a1a000000230000002b0007060a0a03040303002d000201000033000044690000ff01000100'));\"}]",
+        "vgi.keywords": "[\"tls\",\"handshake\",\"clienthello\",\"serverhello\",\"guard\",\"validate\",\"is tls\",\"filter\",\"detect tls\"]",
+        "vgi.title": "TLS Handshake Detector"
+      },
+      "BOOLEAN",
+      [
+        "bytes"
+      ],
+      [
+        "BLOB"
+      ],
+      null,
+      null,
+      false,
+      true,
+      null,
+      22726,
+      [
+        "SELECT tlsfp.main.is_tls_handshake(from_hex('010000cf03031111111111111111111111111111111111111111111111111111111111111111110000200a0a002f0035009c009d130113021303c013c014c02bc02cc02fc030cca8cca90100008600000010000e00000b6578616d706c652e636f6d000500050100000000000a000a0008001d001700180019000b00020100000d0012001004030804040105030805050108060601001000050003026832001200000015000000170000001b00001a1a000000230000002b0007060a0a03040303002d000201000033000044690000ff01000100'));"
+      ],
+      "CONSISTENT",
+      []
+    ],
+    [
+      "tlsfp",
+      "22592",
+      "main",
+      "ja4",
+      null,
+      "scalar",
+      "Compute the JA4 (base TLS-client) fingerprint of a raw TLS ClientHello; NULL if the bytes do not parse",
+      null,
+      {
+        "vgi.category": "JA4",
+        "vgi.doc_llm": "Compute the JA4 base TLS-client fingerprint of a raw ClientHello, e.g. 't13d1516h2_8daaf6152771_e5627efa2ab1'. JA4_a encodes the transport, TLS version, SNI presence, cipher/extension counts, and ALPN; JA4_b and JA4_c are truncated SHA-256 hashes of the sorted cipher and extension lists (GREASE stripped). More robust than JA3 because the inputs are sorted. Returns NULL for non-ClientHello bytes. (Only the base JA4 TLS-client fingerprint is provided \u2014 not the JA4+ suite.)",
+        "vgi.doc_md": "JA4 TLS-client fingerprint of a raw ClientHello, e.g. `ja4(client_hello)` \u2192 't13d\u2026_\u2026_\u2026'. NULL if unparseable.",
+        "vgi.example_queries": "[{\"description\":\"Compute the JA4 fingerprint of a captured ClientHello.\",\"sql\":\"SELECT tlsfp.main.ja4(from_hex('010000cf03031111111111111111111111111111111111111111111111111111111111111111110000200a0a002f0035009c009d130113021303c013c014c02bc02cc02fc030cca8cca90100008600000010000e00000b6578616d706c652e636f6d000500050100000000000a000a0008001d001700180019000b00020100000d0012001004030804040105030805050108060601001000050003026832001200000015000000170000001b00001a1a000000230000002b0007060a0a03040303002d000201000033000044690000ff01000100'));\"}]",
+        "vgi.keywords": "[\"ja4\",\"tls fingerprint\",\"client fingerprint\",\"clienthello\",\"threat hunting\",\"c2\",\"bot detection\",\"sha256\",\"cluster\",\"foxio\"]",
+        "vgi.title": "JA4 Client Fingerprint"
+      },
+      "VARCHAR",
+      [
+        "client_hello"
+      ],
+      [
+        "BLOB"
+      ],
+      null,
+      null,
+      false,
+      true,
+      null,
+      22732,
+      [
+        "SELECT tlsfp.main.ja4(from_hex('010000cf03031111111111111111111111111111111111111111111111111111111111111111110000200a0a002f0035009c009d130113021303c013c014c02bc02cc02fc030cca8cca90100008600000010000e00000b6578616d706c652e636f6d000500050100000000000a000a0008001d001700180019000b00020100000d0012001004030804040105030805050108060601001000050003026832001200000015000000170000001b00001a1a000000230000002b0007060a0a03040303002d000201000033000044690000ff01000100'));"
+      ],
+      "CONSISTENT",
+      []
+    ],
+    [
+      "tlsfp",
+      "22592",
+      "main",
+      "ja3s_from_parts",
+      null,
+      "scalar",
+      "Compute the JA3S fingerprint (MD5, 32 hex) from already-extracted ServerHello fields (version, selected cipher, extensions)",
+      null,
+      {
+        "vgi.category": "JA3 / JA3S",
+        "vgi.doc_llm": "Compute the JA3S fingerprint from the already-extracted ServerHello fields \u2014 the TLS version, the single cipher suite the server selected, and the server's extension list \u2014 for callers who parsed the handshake elsewhere (e.g. Zeek). GREASE values in the extension list are stripped exactly as in the bytes path.",
+        "vgi.doc_md": "JA3S from parsed fields, e.g. `ja3s_from_parts(771, 49199, extensions)`.",
+        "vgi.example_queries": "[{\"description\":\"Compute JA3S from fields already parsed by Zeek/pcap tooling.\",\"sql\":\"SELECT tlsfp.main.ja3s_from_parts(771, 49199, [65281, 16]);\"}]",
+        "vgi.keywords": "[\"ja3s\",\"from parts\",\"zeek\",\"ssl.log\",\"precomputed fields\",\"server fingerprint\",\"selected cipher\",\"extension list\"]",
+        "vgi.title": "JA3S From Extracted Fields"
+      },
+      "VARCHAR",
+      [
+        "version",
+        "cipher",
+        "extensions"
+      ],
+      [
+        "INTEGER",
+        "INTEGER",
+        "INTEGER[]"
+      ],
+      null,
+      null,
+      false,
+      true,
+      null,
+      22731,
+      [
+        "SELECT tlsfp.main.ja3s_from_parts(771, 49199, [65281, 16]);"
+      ],
+      "CONSISTENT",
+      []
+    ],
+    [
+      "tlsfp",
+      "22592",
+      "main",
+      "ja4_raw",
+      null,
+      "scalar",
+      "Return the un-hashed JA4_r string (ja4_a_<ciphers>_<extensions>_<sig_algs>) of a raw ClientHello; NULL if it does not parse",
+      null,
+      {
+        "vgi.category": "JA4",
+        "vgi.doc_llm": "Return the raw JA4_r form of a ClientHello: the JA4_a prefix, then the sorted GREASE-stripped cipher list, the sorted extension list (SNI and ALPN removed), and the signature-algorithm list in original order \u2014 all as comma-separated 4-hex values rather than hashed. Exposed for audit, debugging, and re-hashing under a custom policy. NULL when the bytes do not parse.",
+        "vgi.doc_md": "Raw, un-hashed JA4_r string, e.g. `ja4_raw(client_hello)` \u2192 't13d1516h2_002f,0035,\u2026_0005,000a,\u2026_0403,0804,\u2026'.",
+        "vgi.example_queries": "[{\"description\":\"Inspect the un-hashed JA4_r string for audit/debugging.\",\"sql\":\"SELECT tlsfp.main.ja4_raw(from_hex('010000cf03031111111111111111111111111111111111111111111111111111111111111111110000200a0a002f0035009c009d130113021303c013c014c02bc02cc02fc030cca8cca90100008600000010000e00000b6578616d706c652e636f6d000500050100000000000a000a0008001d001700180019000b00020100000d0012001004030804040105030805050108060601001000050003026832001200000015000000170000001b00001a1a000000230000002b0007060a0a03040303002d000201000033000044690000ff01000100'));\"}]",
+        "vgi.keywords": "[\"ja4\",\"ja4_r\",\"raw\",\"un-hashed\",\"audit\",\"debug\",\"clienthello\",\"cipher list\",\"extension list\",\"signature algorithms\"]",
+        "vgi.title": "JA4_r (raw, un-hashed)"
+      },
+      "VARCHAR",
+      [
+        "client_hello"
+      ],
+      [
+        "BLOB"
+      ],
+      null,
+      null,
+      false,
+      true,
+      null,
+      22734,
+      [
+        "SELECT tlsfp.main.ja4_raw(from_hex('010000cf03031111111111111111111111111111111111111111111111111111111111111111110000200a0a002f0035009c009d130113021303c013c014c02bc02cc02fc030cca8cca90100008600000010000e00000b6578616d706c652e636f6d000500050100000000000a000a0008001d001700180019000b00020100000d0012001004030804040105030805050108060601001000050003026832001200000015000000170000001b00001a1a000000230000002b0007060a0a03040303002d000201000033000044690000ff01000100'));"
+      ],
+      "CONSISTENT",
+      []
+    ],
+    [
+      "tlsfp",
+      "22592",
+      "main",
+      "ja4_from_parts",
+      null,
+      "scalar",
+      "Compute the JA4 (base TLS-client) fingerprint from already-extracted ClientHello fields (effective TLS version, ciphers, extensions, signature algorithms, ALPN)",
+      null,
+      {
+        "vgi.category": "JA4",
+        "vgi.doc_llm": "Compute the JA4 base TLS-client fingerprint from already-extracted ClientHello fields: the effective TLS version code (e.g. 772 for TLS 1.3), the cipher-suite list, the extension list (SNI presence is inferred from whether it contains 0x0000=0), the signature-algorithm list (kept in order), and the first ALPN value (e.g. 'h2', empty string for none). GREASE is stripped exactly as in the bytes path so the two modes agree.",
+        "vgi.doc_md": "JA4 from parsed fields, e.g. `ja4_from_parts(772, ciphers, extensions, sig_algs, 'h2')`.",
+        "vgi.example_queries": "[{\"description\":\"Compute JA4 from fields already parsed by Zeek/pcap tooling.\",\"sql\":\"SELECT tlsfp.main.ja4_from_parts(772, [4865,4866], [0,43,13], [1027,2052], 'h2');\"}]",
+        "vgi.keywords": "[\"ja4\",\"from parts\",\"zeek\",\"ssl.log\",\"precomputed fields\",\"ja4 from fields\",\"alpn\",\"signature algorithms\",\"sorted\"]",
+        "vgi.title": "JA4 From Extracted Fields"
+      },
+      "VARCHAR",
+      [
+        "version",
+        "ciphers",
+        "extensions",
+        "sig_algs",
+        "alpn"
+      ],
+      [
+        "INTEGER",
+        "INTEGER[]",
+        "INTEGER[]",
+        "INTEGER[]",
+        "VARCHAR"
+      ],
+      null,
+      null,
+      false,
+      true,
+      null,
+      22733,
+      [
+        "SELECT tlsfp.main.ja4_from_parts(772, [4865,4866], [0,43,13], [1027,2052], 'h2');"
+      ],
+      "CONSISTENT",
+      []
+    ],
+    [
+      "tlsfp",
+      "22592",
+      "main",
+      "parse_client_hello",
+      null,
+      "scalar",
+      "Decode a raw TLS ClientHello into STRUCT(version, sni, ciphers, extensions, curves, alpn); NULL struct if the bytes do not parse",
+      null,
+      {
+        "vgi.category": "Parsing & guards",
+        "vgi.doc_llm": "Decode a raw TLS ClientHello into a struct of its fingerprint-relevant fields: the legacy TLS version, the SNI host name (NULL if absent), the cipher-suite list, the extension-type list, the elliptic-curve (supported_groups) list, and the ALPN protocol list. This is a faithful decode that PRESERVES GREASE values (the ja3/ja4 functions strip them). Returns a NULL struct for bytes that do not parse as a ClientHello.",
+        "vgi.doc_md": "Decode a ClientHello into `STRUCT(version, sni, ciphers, extensions, curves, alpn)`, e.g. `parse_client_hello(client_hello).*`.",
+        "vgi.example_queries": "[{\"description\":\"Decode the fingerprint-relevant fields of a ClientHello.\",\"sql\":\"SELECT (tlsfp.main.parse_client_hello(from_hex('010000cf03031111111111111111111111111111111111111111111111111111111111111111110000200a0a002f0035009c009d130113021303c013c014c02bc02cc02fc030cca8cca90100008600000010000e00000b6578616d706c652e636f6d000500050100000000000a000a0008001d001700180019000b00020100000d0012001004030804040105030805050108060601001000050003026832001200000015000000170000001b00001a1a000000230000002b0007060a0a03040303002d000201000033000044690000ff01000100'))).sni;\"}]",
+        "vgi.keywords": "[\"parse\",\"decode\",\"clienthello\",\"tls\",\"sni\",\"ciphers\",\"extensions\",\"curves\",\"alpn\",\"struct\",\"inspect handshake\"]",
+        "vgi.title": "ClientHello Decoder"
+      },
+      "STRUCT(\"version\" INTEGER, sni VARCHAR, ciphers INTEGER[], \"extensions\" INTEGER[], curves INTEGER[], alpn VARCHAR[])",
+      [
+        "client_hello"
+      ],
+      [
+        "BLOB"
+      ],
+      null,
+      null,
+      false,
+      true,
+      null,
+      22735,
+      [
+        "SELECT (tlsfp.main.parse_client_hello(from_hex('010000cf03031111111111111111111111111111111111111111111111111111111111111111110000200a0a002f0035009c009d130113021303c013c014c02bc02cc02fc030cca8cca90100008600000010000e00000b6578616d706c652e636f6d000500050100000000000a000a0008001d001700180019000b00020100000d0012001004030804040105030805050108060601001000050003026832001200000015000000170000001b00001a1a000000230000002b0007060a0a03040303002d000201000033000044690000ff01000100'))).sni;"
+      ],
+      "CONSISTENT",
+      []
+    ],
+    [
+      "tlsfp",
+      "22592",
+      "main",
+      "ja3_string",
+      null,
+      "scalar",
+      "Return the pre-hash JA3 string (version,ciphers,extensions,curves,point_formats) of a raw ClientHello; NULL if it does not parse",
+      null,
+      {
+        "vgi.category": "JA3 / JA3S",
+        "vgi.doc_llm": "Return the un-hashed JA3 string for a raw ClientHello: the decimal SSLVersion,Cipher,SSLExtension,EllipticCurve,EllipticCurvePointFormat fields (GREASE stripped) that JA3 hashes with MD5. Exposed for audit, debugging, and re-hashing under a custom policy. NULL when the bytes do not parse.",
+        "vgi.doc_md": "Pre-hash JA3 string of a ClientHello, e.g. `ja3_string(client_hello)` \u2192 '771,4865-4866-\u2026,0-23-\u2026,29-23-\u2026,0'.",
+        "vgi.example_queries": "[{\"description\":\"Inspect the un-hashed JA3 string for audit/debugging.\",\"sql\":\"SELECT tlsfp.main.ja3_string(from_hex('010000cf03031111111111111111111111111111111111111111111111111111111111111111110000200a0a002f0035009c009d130113021303c013c014c02bc02cc02fc030cca8cca90100008600000010000e00000b6578616d706c652e636f6d000500050100000000000a000a0008001d001700180019000b00020100000d0012001004030804040105030805050108060601001000050003026832001200000015000000170000001b00001a1a000000230000002b0007060a0a03040303002d000201000033000044690000ff01000100'));\"}]",
+        "vgi.keywords": "[\"ja3\",\"ja3 string\",\"pre-hash\",\"audit\",\"debug\",\"clienthello\",\"raw fingerprint\",\"cipher list\",\"extension list\"]",
+        "vgi.title": "JA3 String (pre-hash)"
+      },
+      "VARCHAR",
+      [
+        "client_hello"
+      ],
+      [
+        "BLOB"
+      ],
+      null,
+      null,
+      false,
+      true,
+      null,
+      22729,
+      [
+        "SELECT tlsfp.main.ja3_string(from_hex('010000cf03031111111111111111111111111111111111111111111111111111111111111111110000200a0a002f0035009c009d130113021303c013c014c02bc02cc02fc030cca8cca90100008600000010000e00000b6578616d706c652e636f6d000500050100000000000a000a0008001d001700180019000b00020100000d0012001004030804040105030805050108060601001000050003026832001200000015000000170000001b00001a1a000000230000002b0007060a0a03040303002d000201000033000044690000ff01000100'));"
+      ],
+      "CONSISTENT",
+      []
+    ],
+    [
+      "tlsfp",
+      "22592",
+      "main",
+      "ja3s",
+      null,
+      "scalar",
+      "Compute the JA3S fingerprint (MD5, 32 hex) of a raw TLS ServerHello; NULL if the bytes do not parse",
+      null,
+      {
+        "vgi.category": "JA3 / JA3S",
+        "vgi.doc_llm": "Compute the JA3S TLS server fingerprint \u2014 the 32-hex MD5 of the ServerHello's version, the single selected cipher suite, and the server's extension list (GREASE stripped). Accepts a full TLS record or a bare handshake message; returns NULL for bytes that do not parse as a ServerHello. Paired with JA3, it captures how a server responds to a given client and helps cluster C2 servers.",
+        "vgi.doc_md": "JA3S server fingerprint (MD5 hex) of a raw ServerHello, e.g. `ja3s(server_hello)`. NULL if unparseable.",
+        "vgi.example_queries": "[{\"description\":\"Fingerprint the server side of a handshake with JA3S.\",\"sql\":\"SELECT tlsfp.main.ja3s(from_hex('020000360303222222222222222222222222222222222222222222222222222222222222222200c02f00000eff01000100001000050003026832'));\"}]",
+        "vgi.keywords": "[\"ja3s\",\"server fingerprint\",\"serverhello\",\"tls fingerprint\",\"c2\",\"malware server\",\"cluster\",\"md5\"]",
+        "vgi.title": "JA3S Server Fingerprint"
+      },
+      "VARCHAR",
+      [
+        "server_hello"
+      ],
+      [
+        "BLOB"
+      ],
+      null,
+      null,
+      false,
+      true,
+      null,
+      22730,
+      [
+        "SELECT tlsfp.main.ja3s(from_hex('020000360303222222222222222222222222222222222222222222222222222222222222222200c02f00000eff01000100001000050003026832'));"
+      ],
+      "CONSISTENT",
+      []
+    ]
+  ]
+}

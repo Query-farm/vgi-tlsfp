@@ -81,7 +81,6 @@ To build the worker yourself, see [Build & test](#build--test).
 | `ja4_from_parts(version INT, ciphers INT[], extensions INT[], sig_algs INT[], alpn VARCHAR)` | `VARCHAR` | JA4 from already-extracted fields (`version` is the effective TLS version code, e.g. `772`). |
 | `parse_client_hello(client_hello BLOB)` | `STRUCT(version INT, sni VARCHAR, ciphers INT[], extensions INT[], curves INT[], alpn VARCHAR[])` | Faithful decode of a ClientHello (GREASE preserved). |
 | `is_tls_handshake(bytes BLOB)` | `BOOLEAN` | Total guard: does the input look like a TLS handshake? `NULL` input → `NULL`. |
-| `tlsfp_version()` | `VARCHAR` | The running worker's version string. |
 
 ### Conventions
 
@@ -176,4 +175,7 @@ MIT — see [LICENSE](LICENSE). Copyright 2026 Query Farm LLC. Part of the
 
 ## Notebooks
 
-[Executed SQL walkthrough](notebooks/README.md): compare JA3 and base JA4 groups, retain parsing coverage, and correlate synthetic certificate evidence with VGI X.509.
+[Two executed SQL walkthroughs](notebooks/README.md) cover all ten TLSFP functions:
+compare JA3 and base JA4 groups with certificate evidence from VGI X.509, then
+reconstruct JA3, JA4 and JA3S from known fields. Both include SVG charts, explicit
+release connections, a parameter experiment and an Open in Colab link.
