@@ -4,6 +4,19 @@ All notable changes to `vgi-tlsfp` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/), and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.4.1] - 2026-11-14
+
+### Fixed
+- Every example built from the sample ClientHello now shows real output. The
+  embedded sample hex had two stray bytes in its 32-byte random, so `ja3`,
+  `ja3_string`, `ja4`, `ja4_raw`, `parse_client_hello` and the schema-level
+  examples returned NULL for everyone (vgi-lint 2.7.0 VGI913). A unit test now
+  pins the sample hex to the FoxIO canonical JA4 golden.
+
+### Added
+- Composed examples: JA4-to-SNI pivot, JA3/JA3S session pairing, and a JA3
+  audit that checks the hash is the MD5 of `ja3_string`.
+
 ## [0.1.0] - 2026-06-29
 
 Initial release.
