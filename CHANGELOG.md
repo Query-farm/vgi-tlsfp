@@ -9,6 +9,9 @@ All notable changes to `vgi-tlsfp` are documented here. The format follows
 ### Changed
 - Docs link to upstream sources (vgi-lint VGI183): the catalog `vgi.doc_md` now
   ends with a "Sources and references" section linking the JA3 and JA4 specs, RFC 8446 and RFC 8701 (GREASE).
+- Docs give an overview, not a function list (vgi-lint VGI173): the schema
+  `vgi.doc_llm` now describes the fingerprint families, input modes and caveats
+  instead of naming every function.
 
 ## [0.4.1] - 2026-11-14
 

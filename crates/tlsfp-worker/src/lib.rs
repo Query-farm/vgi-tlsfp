@@ -322,10 +322,14 @@ fn catalog_metadata(name: &str) -> CatalogModel {
                 ),
                 (
                     "vgi.doc_llm".to_string(),
-                    "TLS fingerprint functions: ja3/ja3_string/ja3_from_parts, \
-                     ja3s/ja3s_from_parts, ja4/ja4_raw/ja4_from_parts, parse_client_hello, and \
-                     the is_tls_handshake guard. Compute JA3/JA3S/JA4 over raw handshake bytes or \
-                     extracted fields to cluster TLS infrastructure."
+                    "Pure TLS-fingerprint scalars in three families: Salesforce JA3 client and \
+                     JA3S server fingerprints, the base FoxIO JA4 client fingerprint, and \
+                     ClientHello parsing with a cheap is-this-a-handshake guard. Each fingerprint \
+                     takes either the raw handshake record or the already-extracted fields (for \
+                     example from Zeek), and both modes share the same builders so they agree; \
+                     pre-hash/raw companions let you audit a hash. Deterministic, no network or \
+                     state, and malformed input yields NULL per row. Use them to cluster and \
+                     pivot on TLS client and server infrastructure."
                         .to_string(),
                 ),
                 (
