@@ -246,7 +246,12 @@ fn catalog_metadata(name: &str) -> CatalogModel {
                  **Licensing:** only the patent-free fingerprints are implemented — JA3/JA3S \
                  (BSD-3) and base JA4 TLS-client (BSD-3, patent-disclaimed). The JA4+ suite \
                  (JA4S/JA4H/JA4L/JA4X/JA4SSH, FoxIO License 1.1, patent-pending) and JARM are \
-                 intentionally NOT implemented."
+                 intentionally NOT implemented.\n\n\
+                 ## Sources and references\n\n\
+                 - [JA3 / JA3S (Salesforce)](https://github.com/salesforce/ja3)\n\
+                 - [JA4 (FoxIO)](https://github.com/FoxIO-LLC/ja4) — see the [JA4 technical details](https://github.com/FoxIO-LLC/ja4/blob/main/technical_details/JA4.md)\n\
+                 - [RFC 8446](https://www.rfc-editor.org/rfc/rfc8446) — TLS 1.3 handshake messages\n\
+                 - [RFC 8701](https://www.rfc-editor.org/rfc/rfc8701) — GREASE values, ignored by the fingerprints"
                     .to_string(),
             ),
             ("vgi.agent_test_tasks".to_string(), agent_test_tasks_value()),
